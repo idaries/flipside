@@ -1018,38 +1018,6 @@ body {
 <script>
 
 const COLORS = ['#cba6f7','#f5c2e7','#a6e3a1','#f9e2af','#89b4fa','#f38ba8','#94e2d5','#fab387'];
-const SAMPLE = [
-  {
-    id: 'd1', name: 'Spanish Vocabulary', color: '#cba6f7', description: 'Common words and phrases for everyday conversation.',
-    cards: [
-      { id: 'c1', front: 'Hola', back: 'Hello', starred: false },
-      { id: 'c2', front: 'Gracias', back: 'Thank you', starred: true },
-      { id: 'c3', front: 'Por favor', back: 'Please', starred: false },
-      { id: 'c4', front: '¿Cómo estás?', back: 'How are you?', starred: false },
-      { id: 'c5', front: 'Buenos días', back: 'Good morning', starred: false },
-      { id: 'c6', front: 'Hasta luego', back: 'See you later', starred: false },
-    ]
-  },
-  {
-    id: 'd2', name: 'JavaScript Basics', color: '#f9e2af', description: 'Core concepts for the language of the web.',
-    cards: [
-      { id: 'c7', front: 'What does `typeof null` return?', back: '"object" — a historical bug kept for backwards compatibility', starred: false },
-      { id: 'c8', front: 'let vs const', back: '`let` allows reassignment; `const` bindings cannot be reassigned', starred: false },
-      { id: 'c9', front: 'What is a closure?', back: 'A function that retains access to its outer scope variables even after that scope has finished executing', starred: true },
-      { id: 'c10', front: 'What does `===` check?', back: 'Strict equality — both value and type, without coercion', starred: false },
-    ]
-  },
-  {
-    id: 'd3', name: 'World Capitals', color: '#a6e3a1', description: 'Test your geography knowledge.',
-    cards: [
-      { id: 'c11', front: 'Japan', back: 'Tokyo', starred: false },
-      { id: 'c12', front: 'Canada', back: 'Ottawa', starred: false },
-      { id: 'c13', front: 'Australia', back: 'Canberra', starred: false },
-      { id: 'c14', front: 'Brazil', back: 'Brasília', starred: false },
-    ]
-  },
-];
-
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 const safeColor = c => COLORS.includes(c) ? c : COLORS[0];
 
@@ -1097,9 +1065,7 @@ function load() {
     const raw = localStorage.getItem('flash-decks-v2');
     if (raw) return normalizeLibrary(JSON.parse(raw));
   } catch (e) {}
-  const sample = structuredClone(SAMPLE);
-  sample.forEach(d => { d.folderId = null; });
-  return { decks: sample, folders: [] };
+  return { decks: [], folders: [] };
 }
 
 const savedData = load();
