@@ -1,5 +1,7 @@
 # Flipside
 
+> Work in progress
+
 A dependency-free study app.
 
 Visit [idaries.github.io/flipside](https://idaries.github.io/flipside) to try it.
