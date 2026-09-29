@@ -579,6 +579,7 @@ body {
   #sidebar.collapsed { width:0; min-width:0; border:none; overflow:hidden; visibility:hidden; }
   .mobile-toggle { display:grid; }
   #sidebar:not(.collapsed) + #main::before { content:''; position:fixed; inset:0; background:var(--overlay); z-index:15; }
+  #mobileSidebarToggle { position:relative; z-index:25; }
   .folder-decks { margin-left: 0; padding-left: 0; border-left: none; }
   .deck-actions { opacity: 1; pointer-events: auto; }
   .deck-actions .icon-btn-sm { width: 24px; height: 24px; }
@@ -628,7 +629,7 @@ body {
   </aside>
 
   <main id="main">
-    <button id="mobileSidebarToggle" class="mobile-toggle" aria-label="Open decks menu" aria-expanded="false">
+    <button id="mobileSidebarToggle" class="mobile-toggle" aria-label="Open decks menu" aria-controls="sidebar" aria-expanded="false">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
     <div class="view active" id="homeView">
@@ -1234,6 +1235,7 @@ const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
 function setMobileSidebar(open) {
   sidebar.classList.toggle('collapsed', !open);
   mobileSidebarToggle.setAttribute('aria-expanded', String(open));
+  mobileSidebarToggle.setAttribute('aria-label', open ? 'Close decks menu' : 'Open decks menu');
 }
 mobileSidebarToggle.addEventListener('click', () => {
   setMobileSidebar(sidebar.classList.contains('collapsed'));
