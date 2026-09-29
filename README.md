@@ -2,6 +2,8 @@
 
 A dependency-free study app.
 
+Visit [idaries.github.io/flipside](https://idaries.github.io/flipside) to try it.
+
 ## Run
 
 Open `index.html` directly, or serve the folder:
