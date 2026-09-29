@@ -1,0 +1,3395 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="mocha">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><rect width=%2224%22 height=%2224%22 rx=%225%22 fill=%22%231e1e2e%22/><rect x=%223%22 y=%225%22 width=%2214%22 height=%2214%22 rx=%222%22 fill=%22none%22 stroke=%22%23cba6f7%22 stroke-width=%222%22/><path d=%22M8 3h11a2 2 0 0 1 2 2v11%22 fill=%22none%22 stroke=%22%23cba6f7%22 stroke-width=%222%22/></svg>">
+<title>Flipside</title>
+<style>
+/* ============ CATPPUCCIN THEMES ============ */
+:root {
+  --bg: #1e1e2e;
+  --surface: #181825;
+  --surface-2: #313244;
+  --surface-3: #45475a;
+  --border: rgba(205, 214, 244, 0.07);
+  --border-2: rgba(205, 214, 244, 0.14);
+  --text: #cdd6f4;
+  --text-2: #a6adc8;
+  --text-3: #6c7086;
+  --accent: #cba6f7;
+  --accent-deep: #b4befe;
+  --green: #a6e3a1;
+  --red: #f38ba8;
+  --amber: #f9e2af;
+  --overlay: rgba(17, 17, 27, 0.65);
+  --radius: 10px;
+  --radius-lg: 16px;
+  --sidebar-w: 252px;
+  --sidebar-w-collapsed: 72px;
+}
+:root[data-theme="macchiato"] {
+  --bg: #24273a;
+  --surface: #1e2030;
+  --surface-2: #363a4f;
+  --surface-3: #494d64;
+  --border: rgba(202, 211, 245, 0.07);
+  --border-2: rgba(202, 211, 245, 0.14);
+  --text: #cad3f5;
+  --text-2: #a5adcb;
+  --text-3: #6e738d;
+  --accent: #c6a0f6;
+  --accent-deep: #b7bdf8;
+  --green: #a6da95;
+  --red: #ed8796;
+  --amber: #eed49f;
+  --overlay: rgba(24, 25, 38, 0.65);
+}
+:root[data-theme="frappe"] {
+  --bg: #303446;
+  --surface: #292c3c;
+  --surface-2: #414559;
+  --surface-3: #51576d;
+  --border: rgba(198, 208, 245, 0.08);
+  --border-2: rgba(198, 208, 245, 0.15);
+  --text: #c6d0f5;
+  --text-2: #a5adce;
+  --text-3: #737994;
+  --accent: #ca9ee6;
+  --accent-deep: #babbf1;
+  --green: #a6d189;
+  --red: #e78284;
+  --amber: #e5c890;
+  --overlay: rgba(35, 38, 52, 0.65);
+}
+:root[data-theme="latte"] {
+  --bg: #eff1f5;
+  --surface: #e6e9ef;
+  --surface-2: #ccd0da;
+  --surface-3: #bcc0cc;
+  --border: rgba(76, 79, 105, 0.09);
+  --border-2: rgba(76, 79, 105, 0.16);
+  --text: #4c4f69;
+  --text-2: #6c6f89;
+  --text-3: #9ca0b0;
+  --accent: #8839ef;
+  --accent-deep: #7287fd;
+  --green: #40a02b;
+  --red: #d20f39;
+  --amber: #df8e1d;
+  --overlay: rgba(17, 17, 27, 0.3);
+}
+:root[data-theme="latte"] .modal { box-shadow: 0 16px 48px rgba(76, 79, 105, 0.25); }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 2px; }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+.form-error { display:none; margin-top:6px; font-size:12px; color:var(--red); font-weight:600; }
+.form-error.show { display:block; }
+#toastRoot { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); z-index:300; display:grid; gap:8px; justify-items:center; pointer-events:none; }
+.toast { padding:10px 16px; border-radius:10px; background:var(--surface-3); color:var(--text); border:1px solid var(--border-2); box-shadow:0 10px 30px rgba(0,0,0,.25); font-size:13px; font-weight:600; opacity:0; transform:translateY(8px); transition:opacity .2s, transform .2s; pointer-events:auto; }
+.toast-action { border:0; margin-left:12px; background:none; color:var(--accent-deep); font:inherit; font-size:13px; font-weight:700; cursor:pointer; padding:0; }
+.toast-action:hover { text-decoration:underline; }
+.toast.visible { opacity:1; transform:none; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; } }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+#app { display: flex; height: 100vh; }
+
+/* ============ SIDEBAR ============ */
+.mobile-toggle { display: none; }
+
+#sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.22s cubic-bezier(0.4,0,0.2,1), min-width 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+#sidebar.collapsed { width: var(--sidebar-w-collapsed); min-width: var(--sidebar-w-collapsed); }
+.sidebar-top { display: flex; align-items: center; justify-content: space-between; padding: 18px 12px 12px; gap: 8px; }
+.topbar-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+.logo { display: flex; align-items: center; gap: 10px; overflow: hidden; white-space: nowrap; padding-left: 8px; }
+.logo-mark {
+  width: 26px; height: 26px; border-radius: 8px; flex-shrink: 0;
+  background: var(--surface-3); color: var(--accent);
+  display: grid; place-items: center;
+}
+.logo-mark svg { width: 13px; height: 13px; }
+.logo-name { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; transition: opacity 0.15s; }
+#sidebar.collapsed .sidebar-top { flex-direction: column; gap: 12px; padding: 16px 0; }
+#sidebar.collapsed .topbar-actions { flex-direction: column; gap: 6px; }
+#sidebar.collapsed .logo { justify-content: center; padding-left: 0; }
+#sidebar.collapsed .logo-name, #sidebar.collapsed .sidebar-label,
+#sidebar.collapsed .deck-info, #sidebar.collapsed .deck-actions,
+#sidebar.collapsed .new-deck-btn span { display: none; }
+#sidebar.collapsed .sidebar-section { padding: 4px 8px; }
+#sidebar.collapsed .deck-item { justify-content: center; padding: 9px 0; }
+#sidebar.collapsed .folder-row { justify-content: center; padding: 8px 0; }
+#sidebar.collapsed .folder-row .chev { display: none; }
+#sidebar.collapsed .folder-row .folder-glyph { display: grid; place-items: center; }
+#sidebar.collapsed .folder-decks { margin-left: 0; padding-left: 0; border-left: none; }
+#sidebar.collapsed .deck-dot { margin: 0 auto; }
+#sidebar.collapsed .new-deck-btn { padding: 9px 0; justify-content: center; }
+#collapseBtn, #settingsBtn {
+  width: 26px; height: 26px; border-radius: 7px; border: none;
+  background: transparent; color: var(--text-3); cursor: pointer;
+  display: grid; place-items: center; transition: color 0.12s, background 0.12s; flex-shrink: 0;
+}
+#collapseBtn:hover, #settingsBtn:hover { color: var(--text); background: var(--surface-2); }
+#collapseBtn svg { transition: transform 0.22s; }
+#sidebar.collapsed #collapseBtn svg { transform: rotate(180deg); }
+.sidebar-section { padding: 4px 10px; flex: 1; overflow-y: auto; }
+.sidebar-section::-webkit-scrollbar { width: 4px; }
+.sidebar-section::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
+.section-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-3); padding: 12px 10px 8px; white-space: nowrap; transition: opacity 0.15s;
+}
+.section-label-row { display: flex; align-items: center; justify-content: space-between; }
+.section-label-row #newFolderBtn:hover { color: var(--text); background: var(--surface-2); }
+.deck-item, .folder-row {
+  display: block; position: relative;
+}
+.deck-item {
+  padding: 9px 10px;
+  border-radius: 10px; transition: background 0.1s, color 0.1s;
+  overflow: hidden; color: var(--text-2); margin-bottom: 2px;
+}
+.deck-select, .folder-select {
+  display: flex; align-items: center; gap: 11px; width: 100%; min-width: 0; padding: 0;
+  border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.deck-item:hover { background: rgba(255, 235, 210, 0.04); color: var(--text); }
+.deck-item.active { background: var(--surface-3); color: var(--accent); }
+.deck-item.active .deck-count { color: var(--accent); opacity: 0.6; }
+.deck-dot {
+  width: 26px; height: 26px; border-radius: 8px; flex-shrink: 0;
+  display: grid; place-items: center; font-weight: 700; font-size: 12px; color: #fff;
+}
+.deck-info { flex: 1; min-width: 0; transition: opacity 0.15s; }
+.deck-name { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; padding-right: 6px; }
+.deck-count { font-size: 12px; color: var(--text-3); font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 34px; }
+.folder-row .deck-count { padding-right: 34px; }
+.deck-actions {
+  position: absolute; right: 8px; bottom: 8px;
+  display:flex; opacity:0; pointer-events:none; transition:opacity .1s;
+}
+.deck-item:hover .deck-actions, .deck-item:focus-within .deck-actions { opacity:1; pointer-events:auto; }
+@media (hover:none) { .deck-actions { opacity:1; pointer-events:auto; } }
+.icon-btn-sm {
+  width: 25px; height: 25px; border-radius: 7px; border: none; background: transparent;
+  color: var(--text-3); cursor: pointer; display: grid; place-items: center;
+}
+.icon-btn-sm:hover { background: color-mix(in srgb, var(--text) 8%, transparent); color: var(--text); }
+.icon-btn-sm.danger:hover { color: var(--red); }
+.menu-item {
+  display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 11px; border: 0; border-radius: 7px;
+  background: none; color: var(--text-2); font-family: inherit; font-size: 13px; font-weight: 600; transition: all 0.1s;
+  white-space: nowrap; text-align: left;
+}
+.menu-item.danger { color: var(--red); }
+.menu-item.danger svg { color: var(--red); }
+.menu-item:hover { background: var(--surface-3); color: var(--text); }
+.menu-item svg { width: 14px; height: 14px; color: var(--text-3); flex-shrink: 0; }
+.menu-item:hover svg { color: var(--accent); }
+.new-deck-btn {
+  margin: 0; width: 100%; padding: 9px; border-radius: 10px; border: 1px solid transparent;
+  background: transparent; color: var(--text-3); font-family: inherit; font-size: 13.5px;
+  font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
+  transition: all 0.12s; white-space: nowrap;
+}
+.new-deck-btn:hover { border-color: var(--border-2); color: var(--text); background: var(--surface-2); }
+
+/* ============ MAIN ============ */
+#main { flex: 1; overflow-y: auto; background: var(--bg); }
+#main::-webkit-scrollbar { width: 8px; }
+#main::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 4px; }
+.view { display: none; }
+.view.active { display: block; animation: fadeIn 0.18s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* --- Overview --- */
+.overview-wrap { max-width: 820px; margin: 0 auto; padding: 56px 44px 100px; }
+.deck-header { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 34px; }
+.deck-hero-dot {
+  width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center;
+  font-size: 20px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.deck-title { font-size: 34px; font-weight: 800; letter-spacing: -0.025em; line-height: 1.15; overflow-wrap: anywhere; }
+.deck-desc { color: var(--text-2); margin-top: 8px; font-size: 15px; line-height: 1.55; max-width: 560px; font-weight: 400; }
+/* Study options — grouped rows in one card */
+.options-section-label {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-3); margin: 36px 0 12px;
+}
+.options-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.opt-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  padding: 18px 22px; border-bottom: 1px solid var(--border);
+}
+.opt-row:last-child { border-bottom: none; }
+.opt-row-text { min-width: 0; }
+.opt-row-label { font-size: 14.5px; font-weight: 600; letter-spacing: -0.005em; }
+.opt-row-sub { font-size: 13px; color: var(--text-2); margin-top: 3px; font-weight: 400; line-height: 1.5; }
+.seg-group { display: flex; gap: 3px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 11px; padding: 3px; flex-shrink: 0; }
+.seg-btn {
+  padding: 7px 16px; border-radius: 8px; border: none; background: transparent; color: var(--text-2);
+  font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.12s;
+  display: flex; align-items: center; gap: 7px;
+}
+.seg-btn:hover { color: var(--text); }
+.seg-btn.active { background: var(--surface-3); color: var(--text); }
+.seg-btn svg { width: 14px; height: 14px; }
+.switch { position: relative; width: 44px; height: 26px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; inset: 0; background: var(--surface-3); border: 1px solid var(--border-2);
+  border-radius: 26px; cursor: pointer; transition: 0.18s;
+}
+.slider::before {
+  content: ''; position: absolute; width: 20px; height: 20px; left: 2.5px; top: 2.5px;
+  background: #fff; border-radius: 50%; transition: 0.18s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.switch input:checked + .slider { background: var(--accent-deep); border-color: var(--accent-deep); }
+.switch input:checked + .slider::before { transform: translateX(18px); }
+
+.study-cta {
+  width: 100%; padding: 14px; margin-top: 28px; border-radius: var(--radius); border: none; cursor: pointer;
+  background: var(--text); color: var(--bg); font-family: inherit; font-size: 15px; font-weight: 700;
+  letter-spacing: -0.01em; display: flex; align-items: center; justify-content: center; gap: 9px;
+  transition: filter 0.12s, transform 0.05s;
+}
+.study-cta:hover { filter: brightness(1.12); }
+.study-cta:active { transform: scale(0.995); }
+.study-cta:disabled { background: var(--surface-3); color: var(--text-3); cursor: default; filter: none; }
+.study-cta svg { width: 15px; height: 15px; }
+
+/* Cards list */
+.cards-section { margin-top: 44px; }
+.cards-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.cards-header h3 { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+.btn-ghost {
+  padding: 7px 14px; border-radius: 9px; border: 1px solid var(--border-2); background: transparent;
+  color: var(--text-2); font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.12s;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-ghost:hover { color: var(--text); border-color: color-mix(in srgb, var(--text) 25%, transparent); }
+.card-row {
+  display: flex; align-items: center; gap: 16px; padding: 13px 16px; background: transparent;
+  border: 1px solid transparent; border-bottom: 1px solid var(--border); border-radius: 0; transition: all 0.1s;
+}
+.card-row:first-child { border-top: 1px solid var(--border); border-radius: var(--radius) var(--radius) 0 0; }
+.card-row:last-child { border-radius: 0 0 var(--radius) var(--radius); }
+.card-row:hover { background: var(--surface); border-color: var(--border); }
+.card-row:hover + .card-row { border-top-color: transparent; }
+.card-front { flex: 1; min-width: 0; }
+.card-back { flex: 1; min-width: 0; }
+.card-text { font-size: 13.5px; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-2); }
+.cards-tools { display:flex; align-items:center; gap:8px; }
+.card-search { width: min(260px, 48vw); padding: 7px 11px; border-radius: 9px; border: 1px solid var(--border-2); background: var(--surface-2); color: var(--text); font-family: inherit; font-size: 13px; }
+.card-search:focus { border-color: var(--accent-deep); outline: none; }
+.study-hint { margin-top: 16px; text-align:center; font-size:12px; color:var(--text-3); }
+.data-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.card-front .card-text { color: var(--text); font-weight: 500; }
+.card-row .icon-btn-sm { opacity:0; transition:opacity .1s; }
+.card-row:hover .icon-btn-sm, .card-row:focus-within .icon-btn-sm { opacity:1; }
+.card-row .icon-btn-sm:focus-visible, .deck-actions .icon-btn-sm:focus-visible { opacity:1; }
+@media (hover:none) { .card-row .icon-btn-sm { opacity:1; } }
+.star-btn.starred { opacity: 1 !important; color: var(--amber); }
+.star-btn { color: var(--text-3); }
+.star-btn:hover { color: var(--amber); }
+.empty-cards {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding: 32px 20px; color: var(--text-3); font-size: 13.5px;
+  border: 1px dashed var(--border-2); border-radius: var(--radius);
+}
+
+/* ============ HOME DASHBOARD ============ */
+.home-wrap { max-width: 920px; margin: 0 auto; padding: 52px 44px 90px; }
+.home-header { margin-bottom: 26px; }
+.home-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-3);
+}
+.home-title {
+  font-size: 30px; font-weight: 800; letter-spacing: -.025em; line-height: 1.2;
+  margin-top: 6px;
+}
+.home-sub { color: var(--text-2); margin-top: 6px; font-size: 14px; font-weight: 400; }
+.home-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;
+}
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 20px;
+}
+.stat-label { font-size: 12px; font-weight: 600; color: var(--text-2); }
+.stat-value {
+  font-size: 28px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2;
+  margin-top: 7px; font-variant-numeric: tabular-nums;
+}
+.stat-note { font-size: 12px; color: var(--text-3); margin-top: 5px; }
+.home-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 22px; margin-bottom: 16px;
+}
+.home-card h2 {
+  font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 18px;
+}
+.activity-chart { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; align-items: end; }
+.activity-day { display: grid; gap: 7px; justify-items: center; min-width: 0; }
+.activity-bar {
+  width: 100%; height: 94px; border-radius: 8px; background: var(--surface-2);
+  display: flex; align-items: flex-end; overflow: hidden;
+}
+.activity-bar span {
+  display: block; width: 100%; background: var(--accent-deep); border-radius: 7px 7px 0 0;
+  min-height: 0;
+}
+.activity-day.today .activity-bar span { background: var(--accent); }
+.activity-label { font-size: 11px; color: var(--text-3); font-weight: 600; }
+.activity-day.today .activity-label { color: var(--text); }
+.deck-progress-row {
+  display: flex; align-items: center; gap: 13px; padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.deck-progress-row:last-child { border-bottom: none; padding-bottom: 0; }
+.deck-progress-row .deck-dot { width: 34px; height: 34px; border-radius: 10px; font-size: 13px; }
+.deck-progress-info { flex: 1; min-width: 0; }
+.deck-progress-name {
+  font-size: 14px; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.deck-progress-meta {
+  font-size: 12px; color: var(--text-3); margin-top: 3px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mastery-track {
+  height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; margin-top: 9px;
+}
+.mastery-fill { height: 100%; background: var(--accent-deep); border-radius: 2px; }
+.home-empty {
+  border: 1px dashed var(--border-2); border-radius: var(--radius); padding: 20px;
+  color: var(--text-3); font-size: 13px; text-align: center;
+}
+.home-nav {
+  width: 100%; display: flex; align-items: center; gap: 11px; padding: 9px 10px;
+  border: 0; border-radius: 10px; background: transparent; color: var(--text-2);
+  font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
+  transition: background .1s, color .1s;
+}
+.home-nav svg { width: 16px; height: 16px; flex-shrink: 0; }
+.home-nav:hover { background: rgba(255, 235, 210, .04); color: var(--text); }
+.home-nav.active { background: var(--surface-3); color: var(--accent); }
+#sidebar.collapsed .home-nav { justify-content: center; padding: 9px 0; }
+@media (max-width: 640px) {
+  .home-wrap { padding: 24px 20px 60px; }
+  .home-stats { grid-template-columns: 1fr; }
+  .activity-bar { height: 70px; }
+}
+
+/* ============ STUDY VIEW ============ */
+.study-wrap { max-width: 660px; margin: 0 auto; padding: 44px 44px 80px; }
+.study-topbar {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  margin-bottom: 16px; gap: 10px;
+}
+.study-topbar > :first-child { justify-self: start; }
+.study-topbar > :last-child { justify-self: end; }
+.study-deck-name { font-size: 13px; font-weight: 600; color: var(--text-2); display: flex; align-items: center; gap: 9px; }
+.progress-track { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; margin-bottom: 48px; }
+.progress-fill { height: 100%; background: var(--accent-deep); border-radius: 2px; transition: width 0.3s cubic-bezier(0.4,0,0.2,1); width: 0%; }
+.flashcard-scene { perspective: 1200px; margin-bottom: 26px; }
+.flashcard {
+  position: relative; height: 330px; cursor: pointer; transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+.flashcard.flipped { transform: rotateY(180deg); }
+.flashcard-face {
+  position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-lg); display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 44px; text-align: center; border: 1px solid var(--border-2);
+}
+.flashcard-face.front { background: var(--surface); }
+.flashcard-face.back { background: var(--surface-2); transform: rotateY(180deg); }
+.flashcard-label { position: absolute; top: 18px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+.flashcard-text { font-size: 24px; font-weight: 700; line-height: 1.4; letter-spacing: -0.02em; max-width: 500px; word-wrap: break-word; overflow-wrap: anywhere; }
+.answer-btns { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.ans-btn {
+  padding: 11px 30px; border-radius: var(--radius); border: 1px solid var(--border-2); font-family: inherit; font-size: 13.5px;
+  font-weight: 600; cursor: pointer; transition: all 0.12s; display: flex; align-items: center; gap: 8px;
+  background: transparent;
+}
+.ans-btn.again { color: var(--text-2); }
+.ans-btn.again:hover { color: var(--red); border-color: var(--red); background: color-mix(in srgb, currentColor 8%, transparent); }
+.ans-btn.hard { color: var(--text-2); }
+.ans-btn.hard:hover { color: var(--amber); border-color: var(--amber); background: color-mix(in srgb, currentColor 8%, transparent); }
+.ans-btn.good { color: var(--text-2); }
+.ans-btn.good:hover { color: var(--green); border-color: var(--green); background: rgba(130,201,164,0.08); }
+.ans-btn.easy { color: var(--text-2); }
+.ans-btn.easy:hover { color: var(--green); border-color: var(--green); background: rgba(130,201,164,0.08); }
+.answer-btns.fsrs .ans-btn { padding: 11px 20px; }
+.schedule-note {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 12px;
+  padding: 6px 10px; border: 1px solid var(--border-2); border-radius: 8px;
+  background: var(--surface); color: var(--text-3); font-size: 12px; font-weight: 600;
+}
+.schedule-note strong { color: var(--text-2); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* Quiz */
+.quiz-choice {
+  display: block; width: 100%; padding: 15px 18px; margin-bottom: 10px; border-radius: var(--radius);
+  border: 1px solid var(--border-2); background: transparent; color: var(--text-2);
+  font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; text-align: left;
+  transition: all 0.12s; line-height: 1.45;
+}
+.quiz-choice:hover { border-color: color-mix(in srgb, var(--text) 25%, transparent); color: var(--text); background: var(--surface); }
+.quiz-choice.correct { border-color: var(--green); color: var(--green); background: rgba(130,201,164,0.08); }
+.quiz-choice.wrong { border-color: var(--red); color: var(--red); background: color-mix(in srgb, currentColor 8%, transparent); }
+.quiz-choice:disabled { cursor: default; }
+.quiz-loading {
+  padding: 15px 18px; border: 1px dashed var(--border-2); border-radius: var(--radius);
+  color: var(--text-3); font-size: 13.5px; text-align: center;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.quiz-note { font-size: 12px; color: var(--text-3); margin-top: 8px; text-align: center; }
+@keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+/* Summary */
+.summary-wrap { text-align: center; padding: 60px 20px; }
+.summary-ring {
+  width: 120px; height: 120px; margin: 0 auto 22px; border-radius: 50%;
+  display: grid; place-items: center; position: relative;
+}
+.summary-ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.summary-pct { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.summary-title { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+.summary-sub { color: var(--text-2); font-size: 14px; margin-bottom: 30px; font-weight: 400; }
+
+/* ============ MODALS ============ */
+.modal-overlay {
+  position: fixed; inset: 0; background: var(--overlay);
+  display: none; place-items: center; z-index: 100;
+}
+.modal-overlay.open { display:grid; animation:fadeIn 0.15s; }
+.modal-overlay:not(.open) { visibility:hidden; pointer-events:none; }
+.modal {
+  width: min(560px, calc(100vw - 40px)); max-height: calc(100vh - 48px); overflow-y: auto;
+  background: var(--surface); border: 1px solid var(--border-2);
+  border-radius: var(--radius-lg); padding: 26px; box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+  animation: modalIn 0.18s cubic-bezier(0.34,1.2,0.64,1);
+}
+.modal::-webkit-scrollbar { width: 8px; }
+.modal::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 4px; }
+@keyframes modalIn { from { opacity: 0; transform: translateY(8px) scale(0.99); } to { opacity: 1; transform: none; } }
+.modal h2 { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 20px; }
+.field { margin-bottom: 15px; }
+.field label { display: block; font-size: 12px; font-weight: 600; color: var(--text-2); margin-bottom: 7px; }
+.field input, .field textarea, .field select {
+  width: 100%; padding: 10px 13px; border-radius: 9px; border: 1px solid var(--border-2);
+  background: var(--surface-2); color: var(--text); font-family: inherit; font-size: 14px;
+  outline: none; transition: border-color 0.12s; font-weight: 400;
+}
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent-deep); }
+.field textarea { resize: vertical; min-height: 66px; }
+.color-picker { display: flex; gap: 8px; }
+.color-swatch { width: 26px; height: 26px; padding: 0; border-radius: 8px; cursor: pointer; border: 2px solid transparent; outline: 1px solid color-mix(in srgb, var(--text) 30%, transparent); transition: all 0.1s; appearance: none; font: inherit; }
+.color-swatch.selected { border-color: var(--bg); outline: 2px solid var(--text); }
+.modal-actions { display: flex; gap: 9px; justify-content: flex-end; margin-top: 22px; }
+.btn-primary {
+  padding: 10px 18px; border-radius: 9px; border: none; background: var(--text); color: var(--bg);
+  font-family: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: all 0.12s;
+}
+.btn-primary:hover { filter: brightness(1.12); }
+.btn-secondary {
+  padding: 10px 18px; border-radius: 9px; border: 1px solid var(--border-2); background: transparent;
+  color: var(--text-2); font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.12s;
+}
+.btn-secondary:hover { color: var(--text); background: var(--surface-2); }
+.empty-state { text-align: center; padding: 90px 20px; animation: fadeIn 0.2s ease; }
+.empty-icon {
+  width: 56px; height: 56px; margin: 0 auto 20px; border-radius: 16px;
+  background: var(--surface); border: 1px solid var(--border-2);
+  display: grid; place-items: center; color: var(--text-3);
+}
+.empty-icon svg { width: 24px; height: 24px; }
+.empty-title { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+.empty-sub { color: var(--text-2); font-size: 14px; margin-bottom: 26px; }
+.empty-actions { display: flex; gap: 10px; justify-content: center; }
+.import-drop {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-top: 8px; padding: 10px; border: 1px dashed var(--border-2); border-radius: 9px;
+  color: var(--text-3); font-size: 12.5px; cursor: pointer; transition: all 0.12s;
+}
+.import-drop:hover, .import-drop.dragover { color: var(--text); border-color: var(--accent-deep); background: var(--surface-2); }
+.import-preview {
+  margin-top: 4px; padding: 12px 14px; background: var(--surface-2); border-radius: 9px;
+  font-size: 12.5px; color: var(--text-2); line-height: 1.6; max-height: 130px; overflow-y: auto;
+}
+.folder-row {
+  display: block; position: relative; padding: 8px 8px; margin-top: 2px;
+  border-radius: 10px; color: var(--text-2); transition: background 0.1s, color 0.1s;
+}
+.folder-select { gap: 9px; }
+.folder-row:hover { background: color-mix(in srgb, var(--text) 4%, transparent); color: var(--text); }
+.folder-row .deck-name { font-weight: 600; }
+.folder-row .chev { width: 12px; height: 12px; flex-shrink: 0; color: var(--text-3); transition: transform 0.15s; }
+.folder-row .folder-glyph { display: none; width: 18px; height: 18px; color: var(--text-2); flex-shrink: 0; }
+.folder-row.collapsed .chev { transform: rotate(-90deg); }
+.folder-decks { margin-left: 13px; padding-left: 10px; border-left: 1px solid var(--border-2); }
+#sidebar:not(.collapsed) .folder-row.collapsed + .folder-decks { display: none; }
+.ai-key-link { display: inline-flex; margin-top: 8px; color: var(--accent-deep); font-size: 12.5px; font-weight: 600; text-decoration: none; }
+.ai-key-link:hover { text-decoration: underline; }
+.mode-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.mode-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+  padding: 18px; border-radius: 12px; border: 1px solid var(--border-2);
+  background: var(--surface-2); color: var(--text); cursor: pointer;
+  font-family: inherit; text-align: left; transition: all 0.12s;
+}
+.mode-card:hover { border-color: var(--accent-deep); background: var(--surface-3); transform: translateY(-1px); }
+.mode-card:active { transform: none; }
+.mode-card svg { width: 20px; height: 20px; color: var(--accent); margin-bottom: 8px; }
+.mode-card-name { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+.mode-card-sub { font-size: 12.5px; color: var(--text-2); font-weight: 400; line-height: 1.4; }
+.count-select { padding: 7px 12px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--surface-2); color: var(--text); font-family: inherit; font-size: 13px; font-weight: 500; outline: none; cursor: pointer; flex-shrink: 0; }
+.file-chip {
+  display: flex; align-items: center; gap: 8px; padding: 9px 12px;
+  background: var(--surface-2); border: 1px solid var(--border-2); border-radius: 9px;
+  font-size: 12.5px; color: var(--text-2); font-weight: 500;
+}
+.file-chip svg { width: 14px; height: 14px; color: var(--text-3); flex-shrink: 0; }
+.photo-thumb { max-width: 100%; max-height: 160px; border-radius: 9px; border: 1px solid var(--border-2); display: block; }
+.import-preview .ip-count { font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.import-preview .ip-row { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.import-preview .ip-row b { color: var(--text); font-weight: 600; }
+@media (max-width: 640px) {
+  #sidebar { position: fixed; height: 100vh; z-index: 20; box-shadow: 16px 0 40px rgba(0,0,0,0.5); }
+  #sidebar.collapsed { width:0; min-width:0; border:none; overflow:hidden; visibility:hidden; }
+  .mobile-toggle { display:grid; }
+  #sidebar:not(.collapsed) + #main::before { content:''; position:fixed; inset:0; background:var(--overlay); z-index:15; }
+  .folder-decks { margin-left: 0; padding-left: 0; border-left: none; }
+  .deck-actions { opacity: 1; pointer-events: auto; }
+  .deck-actions .icon-btn-sm { width: 24px; height: 24px; }
+  .folder-row .deck-actions .icon-btn-sm { width: 26px; }
+  .overview-wrap, .study-wrap { padding: 24px 20px 60px; }
+  .flashcard { height: 260px; }
+  .opt-row { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="sidebar-top">
+      <div class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="14" height="14" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v11"/></svg>
+        </div>
+        <span class="logo-name">Flipside</span>
+      </div>
+      <div class="topbar-actions">
+        <button id="settingsBtn" title="Settings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button id="collapseBtn" title="Toggle sidebar">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <button id="homeNav" class="home-nav active" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+        <span class="sidebar-label">Home</span>
+      </button>
+      <div class="section-label sidebar-label section-label-row">
+        <span>Decks</span>
+        <button id="newFolderBtn" title="New folder" style="background:none;border:none;color:var(--text-3);cursor:pointer;display:flex;align-items:center;padding:2px;border-radius:4px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14h6"/></svg>
+        </button>
+      </div>
+      <div id="deckList"></div>
+    </div>
+    <button class="new-deck-btn" id="newDeckBtn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      <span>New Deck</span>
+    </button>
+  </aside>
+
+  <main id="main">
+    <button id="mobileSidebarToggle" class="mobile-toggle" aria-label="Open decks menu" aria-expanded="false">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <div class="view active" id="homeView">
+      <div class="home-wrap">
+        <header class="home-header">
+          <div class="home-eyebrow">Study dashboard</div>
+          <h1 class="home-title" id="homeGreeting">Welcome back</h1>
+          <p class="home-sub">Your latest study activity.</p>
+        </header>
+        <div class="home-stats" id="homeStats"></div>
+        <section class="home-card" aria-labelledby="activityHeading">
+          <h2 id="activityHeading">Study time · last 7 days</h2>
+          <div class="activity-chart" id="studyActivity"></div>
+        </section>
+        <section class="home-card" aria-labelledby="deckProgressHeading">
+          <h2 id="deckProgressHeading">Deck progress</h2>
+          <div id="deckProgressList"></div>
+        </section>
+      </div>
+    </div>
+
+    <div class="view" id="overviewView">
+      <div class="overview-wrap">
+        <div class="empty-state" id="emptyState" style="display:none">
+          <div class="empty-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="14" height="14" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v11"/></svg>
+          </div>
+          <div class="empty-title">No decks yet</div>
+          <div class="empty-sub">Create your first deck, or import one from Quizlet or Anki.</div>
+          <div class="empty-actions">
+            <button class="btn-primary" id="emptyCreateBtn">New deck</button>
+            <button class="btn-secondary" id="emptyImportBtn">Import deck</button>
+          </div>
+        </div>
+        <div id="deckContent">
+        <div class="deck-header">
+          <div class="deck-hero-dot" id="ovDot"></div>
+          <div>
+            <h1 class="deck-title" id="ovTitle"></h1>
+            <p class="deck-desc" id="ovDesc"></p>
+            <div class="schedule-note" id="ovSchedule" style="display:none"></div>
+          </div>
+        </div>
+        <button class="study-cta" id="studyBtn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v13.72c0 .8.87 1.3 1.56.88l10.5-6.86a1.05 1.05 0 0 0 0-1.76L9.56 4.26A1.04 1.04 0 0 0 8 5.14z"/></svg>
+          <span id="studyBtnLabel">Study deck</span>
+        </button>
+        <div class="cards-section">
+          <div class="cards-header">
+            <h3>Cards</h3>
+            <div class="cards-tools">
+              <label class="sr-only" for="cardSearch">Search cards</label>
+              <input class="card-search" id="cardSearch" type="search" placeholder="Search cards" autocomplete="off">
+              <button class="btn-ghost" id="addCardBtn">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                Add card
+              </button>
+            </div>
+          </div>
+          <div id="cardsList"></div>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="studyView">
+      <div class="study-wrap" id="studyInner"></div>
+    </div>
+  </main>
+</div>
+
+<div id="toastRoot" aria-live="polite"></div>
+
+<div class="modal-overlay" id="studyModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="studyModalTitle" aria-describedby="fsrsInfoSub">
+    <h2 id="studyModalTitle">Study “<span id="studyModalDeck"></span>”</h2>
+
+    <div id="modeChoiceView">
+      <div class="opt-row-sub" style="margin-bottom:16px">Choose how you want to study this deck.</div>
+      <div class="mode-cards">
+        <button class="mode-card" data-mode="flashcards">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
+          <span class="mode-card-name">Flashcards</span>
+          <span class="mode-card-sub">Flip through cards at your own pace</span>
+        </button>
+        <button class="mode-card" data-mode="quiz">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.8 2.1c-.8.5-1.3 1-1.3 1.9"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+          <span class="mode-card-name">Multiple choice</span>
+          <span class="mode-card-sub">Pick the right answer from options</span>
+        </button>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" data-close="studyModal">Cancel</button>
+      </div>
+    </div>
+
+    <div id="optionsView" style="display:none">
+      <button class="btn-ghost" id="backToModes" style="margin-bottom:14px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Choose a different mode
+      </button>
+      <div class="options-panel" style="border-radius:12px">
+      <div class="opt-row" id="fsrsInfoRow" style="display:none">
+        <div class="opt-row-text">
+          <div class="opt-row-label" id="fsrsInfoLabel">Spaced repetition</div>
+          <div class="opt-row-sub" id="fsrsInfoSub">Use FSRS for long-term retention. Turn it off for short-term study.</div>
+        </div>
+        <label class="switch" aria-labelledby="fsrsInfoLabel"><input type="checkbox" id="fsrsInfoToggle" aria-labelledby="fsrsInfoLabel"><span class="slider"></span></label>
+      </div>
+      <div class="opt-row">
+        <div class="opt-row-text">
+          <div class="opt-row-label">Answer with</div>
+          <div class="opt-row-sub">Which side of the card you see first</div>
+        </div>
+        <div class="seg-group" id="sideGroup">
+          <button class="seg-btn active" data-side="front">Front first</button>
+          <button class="seg-btn" data-side="back">Back first</button>
+        </div>
+      </div>
+      <div class="opt-row">
+        <div class="opt-row-text">
+          <div class="opt-row-label">Questions</div>
+          <div class="opt-row-sub">How many questions per session</div>
+        </div>
+        <select id="questionCount" class="count-select">
+          <option value="all">All cards</option>
+          <option value="10">10 questions</option>
+          <option value="15">15 questions</option>
+          <option value="20">20 questions</option>
+          <option value="30">30 questions</option>
+          <option value="50">50 questions</option>
+        </select>
+      </div>
+      <div class="opt-row" id="aiDistractorRow">
+        <div class="opt-row-text">
+          <div class="opt-row-label" id="aiDistractorLabel">AI distractors</div>
+          <div class="opt-row-sub" id="aiDistractorSub">Use your AI provider to write plausible wrong answers</div>
+        </div>
+        <label class="switch" aria-labelledby="aiDistractorLabel"><input type="checkbox" id="aiDistractorToggle" aria-labelledby="aiDistractorLabel"><span class="slider"></span></label>
+      </div>
+      <div class="opt-row">
+        <div class="opt-row-text">
+          <div class="opt-row-label" id="shuffleLabel">Shuffle cards</div>
+          <div class="opt-row-sub">Randomize the order each session</div>
+        </div>
+        <label class="switch" aria-labelledby="shuffleLabel"><input type="checkbox" id="shuffleToggle" aria-labelledby="shuffleLabel"><span class="slider"></span></label>
+      </div>
+      <div class="opt-row">
+        <div class="opt-row-text">
+          <div class="opt-row-label" id="starredOnlyLabel">Starred only</div>
+          <div class="opt-row-sub">Study just the cards you flagged</div>
+        </div>
+        <label class="switch" aria-labelledby="starredOnlyLabel"><input type="checkbox" id="starredToggle" aria-labelledby="starredOnlyLabel"><span class="slider"></span></label>
+      </div>
+    </div>
+      <div style="margin-top:20px">
+        <button class="btn-primary" id="startStudyBtn" style="width:100%;padding:12px">Start session</button>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" data-close="studyModal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deckActionsModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="deckActionsTitle" style="width:min(340px, calc(100vw - 40px))">
+    <h2 id="deckActionsTitle" style="margin-bottom:14px">Deck actions</h2>
+    <div id="deckActionsMenu" role="menu" aria-label="Deck actions"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" data-close="deckActionsModal">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="moveModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="moveModalTitle">
+    <h2 id="moveModalTitle">Move “<span id="moveDeckName"></span>”</h2>
+    <div id="moveOptions"></div>
+    <div class="field" style="margin-top:16px">
+      <label for="newFolderName">New folder</label>
+      <div style="display:flex;gap:8px">
+        <input id="newFolderName" placeholder="Folder name" maxlength="40" style="flex:1" aria-describedby="newFolderError">
+        <span class="form-error" id="newFolderError">Please enter a folder name.</span>
+        <button class="btn-secondary" id="createFolderBtn" style="white-space:nowrap">Create & move</button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" data-close="moveModal">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+    <h2 id="settingsModalTitle">Settings</h2>
+    <div class="field">
+      <label id="themeGroupLabel">Flavor</label>
+      <div class="seg-group" id="themeGroup" style="width:100%">
+        <button class="seg-btn" data-theme="latte" style="flex:1;justify-content:center">Latte</button>
+        <button class="seg-btn" data-theme="frappe" style="flex:1;justify-content:center">Frappé</button>
+        <button class="seg-btn" data-theme="macchiato" style="flex:1;justify-content:center">Macchiato</button>
+        <button class="seg-btn" data-theme="mocha" style="flex:1;justify-content:center">Mocha</button>
+      </div>
+    </div>
+    <div class="field">
+      <label id="accentPickerLabel">Accent color</label>
+      <div class="color-picker" id="accentPicker"></div>
+    </div>
+    <div class="field" style="margin-top:20px;padding-top:18px;border-top:1px solid var(--border)">
+      <label for="aiProvider">AI provider</label>
+      <select id="aiProvider">
+        <option value="openai">OpenAI</option>
+        <option value="gemini">Google Gemini</option>
+        <option value="anthropic">Anthropic</option>
+        <option value="openrouter">OpenRouter</option>
+      </select>
+      <div class="opt-row-sub" style="margin-top:8px" id="aiKeyHelp"></div>
+      <a id="aiKeyLink" href="#" target="_blank" rel="noopener noreferrer" class="ai-key-link">Get an API key →</a>
+    </div>
+    <div class="field">
+      <label for="aiModelSelect">Model</label>
+      <select id="aiModelSelect"></select>
+      <input id="aiModel" placeholder="Provider default" style="display:none;margin-top:8px">
+    </div>
+    <div class="field">
+      <label for="aiKey">API key <span style="color:var(--text-3);font-weight:400">— stored only in this browser, sent only to the provider</span></label>
+      <input id="aiKey" type="password" placeholder="Paste your key">
+    </div>
+    <div class="field" style="margin-top:20px;padding-top:18px;border-top:1px solid var(--border)">
+      <label>Local data</label>
+      <div class="data-actions">
+        <button class="btn-secondary" id="exportBackupBtn">Export backup</button>
+        <button class="btn-secondary" id="importBackupBtn">Import backup</button>
+        <input type="file" id="backupFile" accept=".json,application/json" hidden>
+      </div>
+      <div class="opt-row-sub" style="margin-top:8px">Back up or restore decks, folders, and preferences. API keys are never included.</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;justify-content:space-between">
+      <span id="aiStatus" role="status" aria-live="polite" style="font-size:12px;color:var(--text-3)"></span>
+      <button class="btn-secondary" id="aiTestBtn" style="padding:7px 14px">Test connection</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" data-close="settingsModal">Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deckModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="deckModalTitle" style="width:min(560px, calc(100vw - 40px))">
+    <h2 id="deckModalTitle">New deck</h2>
+    <div class="seg-group" id="deckModeTabs" style="width:100%;margin-bottom:16px">
+      <button class="seg-btn active" data-tab="create" style="flex:1;justify-content:center">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Create
+      </button>
+      <button class="seg-btn" data-tab="import" style="flex:1;justify-content:center">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+        Import
+      </button>
+    </div>
+    <div id="deckCreateTab">
+      <div class="field"><label for="deckNameInput">Deck name</label><input id="deckNameInput" aria-describedby="deckNameError" placeholder="e.g. Spanish Vocabulary" maxlength="60"><span class="form-error" id="deckNameError">Please enter a deck name.</span></div>
+      <div class="field"><label for="deckDescInput">Description <span style="color:var(--text-3);font-weight:400">(optional)</span></label><textarea id="deckDescInput" placeholder="What is this deck about?"></textarea></div>
+      <div class="field">
+        <div class="options-panel" style="border-radius:12px">
+          <div class="opt-row">
+            <div class="opt-row-text">
+              <div class="opt-row-label" id="deckFsrsLabel">Spaced repetition</div>
+              <div class="opt-row-sub">Use FSRS to schedule cards for long-term retention. Turn it off for short-term study.</div>
+            </div>
+            <label class="switch" aria-labelledby="deckFsrsLabel"><input type="checkbox" id="deckFsrsToggle" aria-labelledby="deckFsrsLabel"><span class="slider"></span></label>
+          </div>
+        </div>
+      </div>
+      <div class="field"><label id="colorPickerLabel">Color</label><div class="color-picker" id="colorPicker"></div></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" data-close="deckModal">Cancel</button>
+        <button class="btn-primary" id="deckSaveBtn">Create deck</button>
+      </div>
+    </div>
+    <div id="deckImportTab" style="display:none">
+
+
+
+    <div class="field">
+      <label id="importSourceLabel">Source format</label>
+      <div class="seg-group" id="importSource">
+        <button class="seg-btn active" data-source="quizlet" style="flex:1;justify-content:center">Quizlet</button>
+        <button class="seg-btn" data-source="anki" style="flex:1;justify-content:center">Anki</button>
+        <button class="seg-btn" data-source="photo" style="flex:1;justify-content:center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          File
+        </button>
+      </div>
+      <div class="opt-row-sub" style="margin-top:8px" id="importHint">In Quizlet, open the deck → ⋯ → Export, then copy the text and paste it below.</div>
+    </div>
+    <div class="field" id="importNameField">
+      <label for="importName">Deck name</label>
+      <input id="importName" placeholder="Imported deck" maxlength="60">
+    </div>
+    <div class="field" id="importPasteField">
+      <label for="importText">Paste cards <span style="color:var(--text-3);font-weight:400">— or upload a file</span></label>
+      <textarea id="importText" style="min-height:120px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px" placeholder="term&#9;definition"></textarea>
+      <label class="import-drop" for="importFile">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+        Choose a .txt / .csv / .tsv file
+        <input type="file" id="importFile" accept=".txt,.csv,.tsv,.md" hidden>
+      </label>
+      <div class="opt-row-sub" id="importFileWarn" style="display:none;color:var(--amber);margin-top:6px">.apkg files can't be read here — in Anki, use File → Export → “Text separated by tabs (.txt)” and import that instead.</div>
+    </div>
+    <div id="importSepFields">
+      <div class="field">
+        <label for="importTermSep">Term separator</label>
+        <select id="importTermSep">
+          <option value="tab">Tab</option>
+          <option value="dash">" - "</option>
+          <option value="comma">Comma</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="importCardSep">Card separator</label>
+        <select id="importCardSep">
+          <option value="newline">New line</option>
+          <option value="semicolon">Semicolon</option>
+        </select>
+      </div>
+    </div>
+    <div id="importPhotoSection" style="display:none">
+      <div class="field">
+        <label for="importPhotoFile">File to read <span style="color:var(--text-3);font-weight:400">— images, PDFs, or text files (.txt / .md / .csv); paste with ⌘V / Ctrl+V</span></label>
+        <label class="import-drop" for="importPhotoFile">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          Choose a file
+          <input type="file" id="importPhotoFile" accept="image/*,.pdf,.txt,.md,.csv,.tsv" hidden>
+        </label>
+        <div id="photoThumbWrap" style="display:none;margin-top:10px">
+          <img id="photoThumb" class="photo-thumb" alt="Attachment preview">
+          <div id="fileChip" class="file-chip" style="display:none"></div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="importPhotoInstructions">Instructions <span style="color:var(--text-3);font-weight:400">— how should the cards be generated?</span></label>
+        <textarea id="importPhotoInstructions" style="min-height:64px" placeholder="e.g. Make one card per vocabulary word — front = the word, back = the translation"></textarea>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px">
+        <button class="btn-secondary" id="aiExtractBtn" style="display:flex;align-items:center;gap:7px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l4 4-9 9H4v-4z"/></svg>
+          Extract flashcards
+        </button>
+        <span id="aiExtractStatus" role="status" aria-live="polite" style="font-size:12px;color:var(--text-3);text-align:right"></span>
+      </div>
+    </div>
+    <div class="import-preview" id="importPreview" role="status" aria-live="polite"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" data-close="deckModal">Cancel</button>
+      <button class="btn-primary" id="importSaveBtn" disabled>Import</button>
+    </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="cardModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cardModalTitle" style="width:min(560px, calc(100vw - 40px))">
+    <h2 id="cardModalTitle">Add cards</h2>
+    <div class="seg-group" id="cardModeTabs" style="width:100%;margin-bottom:16px">
+      <button class="seg-btn active" data-tab="manual" style="flex:1;justify-content:center">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Type
+      </button>
+      <button class="seg-btn" data-tab="import" style="flex:1;justify-content:center">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+        Import
+      </button>
+    </div>
+    <div id="manualTab">
+      <div class="field"><label for="cardFrontInput">Front</label><textarea id="cardFrontInput" aria-describedby="cardFrontError" placeholder="Question / term"></textarea><span class="form-error" id="cardFrontError">Both front and back are required.</span></div>
+      <div class="field"><label for="cardBackInput">Back</label><textarea id="cardBackInput" aria-describedby="cardBackError" placeholder="Answer / definition"></textarea><span class="form-error" id="cardBackError">Both front and back are required.</span></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" data-close="cardModal">Cancel</button>
+        <button class="btn-primary" id="cardSaveBtn">Save card</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+const COLORS = ['#cba6f7','#f5c2e7','#a6e3a1','#f9e2af','#89b4fa','#f38ba8','#94e2d5','#fab387'];
+const SAMPLE = [
+  {
+    id: 'd1', name: 'Spanish Vocabulary', color: '#cba6f7', description: 'Common words and phrases for everyday conversation.',
+    cards: [
+      { id: 'c1', front: 'Hola', back: 'Hello', starred: false },
+      { id: 'c2', front: 'Gracias', back: 'Thank you', starred: true },
+      { id: 'c3', front: 'Por favor', back: 'Please', starred: false },
+      { id: 'c4', front: '¿Cómo estás?', back: 'How are you?', starred: false },
+      { id: 'c5', front: 'Buenos días', back: 'Good morning', starred: false },
+      { id: 'c6', front: 'Hasta luego', back: 'See you later', starred: false },
+    ]
+  },
+  {
+    id: 'd2', name: 'JavaScript Basics', color: '#f9e2af', description: 'Core concepts for the language of the web.',
+    cards: [
+      { id: 'c7', front: 'What does `typeof null` return?', back: '"object" — a historical bug kept for backwards compatibility', starred: false },
+      { id: 'c8', front: 'let vs const', back: '`let` allows reassignment; `const` bindings cannot be reassigned', starred: false },
+      { id: 'c9', front: 'What is a closure?', back: 'A function that retains access to its outer scope variables even after that scope has finished executing', starred: true },
+      { id: 'c10', front: 'What does `===` check?', back: 'Strict equality — both value and type, without coercion', starred: false },
+    ]
+  },
+  {
+    id: 'd3', name: 'World Capitals', color: '#a6e3a1', description: 'Test your geography knowledge.',
+    cards: [
+      { id: 'c11', front: 'Japan', back: 'Tokyo', starred: false },
+      { id: 'c12', front: 'Canada', back: 'Ottawa', starred: false },
+      { id: 'c13', front: 'Australia', back: 'Canberra', starred: false },
+      { id: 'c14', front: 'Brazil', back: 'Brasília', starred: false },
+    ]
+  },
+];
+
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+const safeColor = c => COLORS.includes(c) ? c : COLORS[0];
+
+function normalizeLibrary(parsed) {
+  let decks, folders;
+  if (Array.isArray(parsed)) { decks = parsed; folders = []; } // pre-folder format
+  else {
+    decks = Array.isArray(parsed.decks) ? parsed.decks : [];
+    folders = Array.isArray(parsed.folders) ? parsed.folders : [];
+  }
+  const usedDeckIds = new Set(), usedFolderIds = new Set();
+  decks = decks.filter(Boolean).map((d, di) => {
+    let id = String(d.id || '').trim();
+    if (!id || usedDeckIds.has(id)) id = `deck-${di}-${uid()}`;
+    usedDeckIds.add(id);
+    return {
+      id,
+      name: typeof d.name === 'string' && d.name.trim() ? d.name.trim().slice(0, 80) : 'Untitled deck',
+      description: typeof d.description === 'string' ? d.description.slice(0, 500) : '',
+      color: safeColor(d.color),
+      folderId: typeof d.folderId === 'string' && d.folderId ? d.folderId : null,
+      fsrs: !!d.fsrs,
+      cards: (Array.isArray(d.cards) ? d.cards : []).filter(Boolean).map((c, ci) => ({
+        id: typeof c.id === 'string' && c.id ? `${id}-${ci}-${c.id}` : `${id}-${ci}-${uid()}`,
+        front: typeof c.front === 'string' ? c.front : '',
+        back: typeof c.back === 'string' ? c.back : '',
+        starred: !!c.starred,
+        schedule: normalizeFsrsState(c.schedule),
+      })),
+    };
+  });
+  folders = folders.filter(Boolean).map((f, fi) => {
+    let id = String(f.id || '').trim();
+    if (!id || usedFolderIds.has(id)) id = `folder-${fi}-${uid()}`;
+    usedFolderIds.add(id);
+    return { id, name: typeof f.name === 'string' && f.name.trim() ? f.name.trim().slice(0, 40) : `Folder ${fi + 1}` };
+  });
+  const folderIds = new Set(folders.map(f => f.id));
+  decks.forEach(d => { if (d.folderId && !folderIds.has(d.folderId)) d.folderId = null; });
+  return { decks, folders };
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem('flash-decks-v2');
+    if (raw) return normalizeLibrary(JSON.parse(raw));
+  } catch (e) {}
+  const sample = structuredClone(SAMPLE);
+  sample.forEach(d => { d.folderId = null; });
+  return { decks: sample, folders: [] };
+}
+
+const savedData = load();
+const savedActiveDeckId = localStorage.getItem('flash-active-deck');
+function normalizeOptions(value) {
+  const source = value && typeof value === 'object' ? value : {};
+  return {
+    mode: source.mode === 'quiz' ? 'quiz' : 'flashcards',
+    side: source.side === 'back' ? 'back' : 'front',
+    shuffle: source.shuffle !== false,
+    starredOnly: !!source.starredOnly,
+    aiDistractors: !!source.aiDistractors,
+    questionCount: ['all','10','15','20','30','50'].includes(String(source.questionCount)) ? String(source.questionCount) : 'all',
+  };
+}
+function loadOptions() {
+  try { return normalizeOptions(JSON.parse(localStorage.getItem('flash-study-options-v1') || '{}')); }
+  catch (e) { return normalizeOptions(null); }
+}
+function persistOptions() {
+  try { localStorage.setItem('flash-study-options-v1', JSON.stringify(state.options)); }
+  catch (err) { console.error(err); }
+}
+function loadCollapsedFolders() {
+  try {
+    const value = JSON.parse(localStorage.getItem('flash-collapsed-folders-v1') || '[]');
+    return Array.isArray(value) ? value.filter(id => typeof id === 'string') : [];
+  } catch (e) { return []; }
+}
+function persistCollapsedFolders() {
+  try { localStorage.setItem('flash-collapsed-folders-v1', JSON.stringify(state.collapsedFolders)); }
+  catch (err) { console.error(err); }
+}
+function normalizeStudyHistory(value) {
+  if (!Array.isArray(value)) return [];
+  return value.filter(Boolean).map((item, index) => ({
+    completedAt: Number(item.completedAt) || Date.now() - index,
+    seconds: Math.max(0, Number(item.seconds) || 0),
+    deckId: typeof item.deckId === 'string' ? item.deckId : '',
+    deckName: typeof item.deckName === 'string' && item.deckName ? item.deckName.slice(0, 80) : 'Deleted deck',
+    mode: item.mode === 'quiz' ? 'quiz' : 'flashcards',
+    results: (Array.isArray(item.results) ? item.results : []).filter(Boolean).slice(0, 500).map(r => ({
+      id: typeof r === 'object' && typeof r.id === 'string' ? r.id : '',
+      correct: !!(typeof r === 'object' ? r.correct : r),
+    })),
+  })).filter(item => item.results.length).slice(-200);
+}
+
+function loadStudyHistory() {
+  try {
+    return normalizeStudyHistory(JSON.parse(localStorage.getItem('flash-study-history-v1') || '[]'));
+  } catch (e) {
+    return [];
+  }
+}
+
+function persistStudyHistory() {
+  try {
+    localStorage.setItem('flash-study-history-v1', JSON.stringify(state.studyHistory.slice(-200)));
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function dateKey(value = new Date()) {
+  const d = new Date(value);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function formatStudySeconds(seconds) {
+  const rounded = Math.round(seconds || 0);
+  if (rounded < 60) return `${rounded}s`;
+  const minutes = Math.round(rounded / 60);
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return rest ? `${hours}h ${rest}m` : `${hours}h`;
+}
+
+function endActiveSession() {
+  if (!session) return;
+  if (session.results.length) saveStudySession();
+  session = null;
+}
+function saveStudySession() {
+  if (!session || !session.results.length || session.savedStats) return;
+  const entry = {
+    completedAt: Date.now(),
+    seconds: Math.min(86400, Math.max(1, (Date.now() - session.startedAt) / 1000)),
+    deckId: session.deck.id,
+    deckName: session.deck.name,
+    mode: session.mode,
+    results: session.results.map((correct, i) => ({ id: session.cards[i]?.id || '', correct: !!correct })),
+  };
+  state.studyHistory.push(entry);
+  state.studyHistory = state.studyHistory.slice(-200);
+  persistStudyHistory();
+  session.savedStats = true;
+}
+
+let state = {
+  decks: savedData.decks,
+  folders: savedData.folders,
+  activeDeckId: savedActiveDeckId,
+  selectedColor: COLORS[0],
+  editingDeckId: null,
+  editingCardId: null,
+  collapsedFolders: [],
+  options: loadOptions(),
+  collapsedFolders: loadCollapsedFolders(),
+  studyHistory: loadStudyHistory(),
+};
+let session = null;
+
+function save() {
+  try {
+    localStorage.setItem('flash-decks-v2', JSON.stringify({ folders: state.folders, decks: state.decks }));
+    localStorage.setItem('flash-active-deck', state.activeDeckId || '');
+  } catch (err) {
+    console.error(err);
+    showToast('Changes saved in this tab only — browser storage may be full or blocked.');
+  }
+}
+function activeDeck() { return state.decks.find(d => d.id === state.activeDeckId); }
+function esc(s) { return String(s ?? '')
+    .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;').replaceAll("'", '&#39;'); }
+
+let lastModalTrigger = null;
+function openModal(modal, focusTarget) {
+  if (!document.activeElement || document.activeElement === document.body) lastModalTrigger = null;
+  else lastModalTrigger = document.activeElement;
+  modal.classList.add('open');
+  setTimeout(() => (focusTarget || modal.querySelector('button,input,textarea,select,[tabindex]'))?.focus(), 50);
+}
+function closeModal(modal) {
+  modal.classList.remove('open');
+  lastModalTrigger?.focus?.();
+  lastModalTrigger = null;
+}
+function setStatus(el, text, color) {
+  el.textContent = text;
+  el.style.color = color || '';
+}
+function showToast(message, action) {
+  const root = document.getElementById('toastRoot');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  if (action?.label && typeof action.run === 'function') {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'toast-action';
+    btn.textContent = action.label;
+    btn.addEventListener('click', () => { action.run(); toast.remove(); });
+    toast.appendChild(btn);
+  }
+  root.appendChild(toast);
+  setTimeout(() => toast.classList.add('visible'), 20);
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    setTimeout(() => toast.remove(), 250);
+  }, action ? 5000 : 2800);
+}
+const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
+function setMobileSidebar(open) {
+  sidebar.classList.toggle('collapsed', !open);
+  mobileSidebarToggle.setAttribute('aria-expanded', String(open));
+}
+mobileSidebarToggle.addEventListener('click', () => {
+  setMobileSidebar(sidebar.classList.contains('collapsed'));
+  if (!sidebar.classList.contains('collapsed')) document.querySelector('.deck-select')?.focus();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Tab') return;
+  const modal = document.querySelector('.modal-overlay.open .modal');
+  if (!modal) return;
+  const focusables = [...modal.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')]
+    .filter(el => el.offsetParent !== null || el === document.activeElement);
+  if (!focusables.length) return;
+  const first = focusables[0], last = focusables.at(-1);
+  if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+});
+
+// ==================== SIDEBAR ====================
+const sidebar = document.getElementById('sidebar');
+const isMobileViewport = window.matchMedia('(max-width: 640px)');
+if (isMobileViewport.matches || localStorage.getItem('flash-sidebar-collapsed') === '1') sidebar.classList.add('collapsed');
+isMobileViewport.addEventListener('change', e => {
+  if (e.matches) setMobileSidebar(false);
+  else sidebar.classList.remove('collapsed');
+  mobileSidebarToggle.setAttribute('aria-expanded', String(!sidebar.classList.contains('collapsed')));
+});
+document.getElementById('collapseBtn').addEventListener('click', () => {
+  sidebar.classList.toggle('collapsed');
+  localStorage.setItem('flash-sidebar-collapsed', sidebar.classList.contains('collapsed') ? '1' : '0');
+  mobileSidebarToggle.setAttribute('aria-expanded', String(!sidebar.classList.contains('collapsed')));
+});
+
+function exportDeck(deck) {
+  const safe = line => line.replace(/\t/g, ' ').replace(/\n/g, ' ');
+  const lines = ['#separator:tab', '#html:false', ...deck.cards.map(c => `${safe(c.front)}\t${safe(c.back)}`)];
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${deck.name.replace(/[\\/:*?"<>|]/g, '-')}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function deckBelongsToFolder(deck, folderId) {
+  return deck.folderId === folderId && (!folderId || state.folders.some(f => f.id === folderId));
+}
+
+function buildDeckItem(deck) {
+  const div = document.createElement('div');
+  div.className = 'deck-item' + (deck.id === state.activeDeckId ? ' active' : '');
+  div.innerHTML = `
+    <button class="deck-select" ${deck.id === state.activeDeckId ? 'aria-current="true"' : ''} aria-label="${esc(deck.name)}, ${deck.cards.length} cards">
+      <div class="deck-dot" style="background:${safeColor(deck.color)}">${esc((deck.name[0] || '?').toUpperCase())}</div>
+      <div class="deck-info">
+        <div class="deck-name">${esc(deck.name)}</div>
+        <div class="deck-count">${deck.cards.length} card${deck.cards.length === 1 ? '' : 's'}</div>
+      </div>
+    </button>
+    <div class="deck-actions">
+      <button class="icon-btn-sm" data-actions-deck="${deck.id}" title="More actions" aria-label="More actions for ${esc(deck.name)}" aria-haspopup="dialog">
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>
+      </button>
+    </div>`;
+  div.addEventListener('click', e => {
+    if (e.target.closest('[data-actions-deck]')) { openDeckActionsModal(deck); return; }
+    endActiveSession();
+    state.activeDeckId = deck.id;
+    save();
+    if (isMobileViewport.matches) setMobileSidebar(false);
+    showView('overview'); renderAll();
+  });
+  return div;
+}
+
+function buildFolderRow(folder) {
+  const row = document.createElement('div');
+  row.className = 'folder-row' + (state.collapsedFolders.includes(folder.id) ? ' collapsed' : '');
+  const decksIn = state.decks.filter(d => deckBelongsToFolder(d, folder.id));
+  row.innerHTML = `
+    <button class="folder-select" aria-expanded="${!state.collapsedFolders.includes(folder.id)}" aria-label="${esc(folder.name)}, ${decksIn.length} decks">
+      <svg class="chev" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      <svg class="folder-glyph" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      <div class="deck-info">
+        <div class="deck-name">${esc(folder.name)}</div>
+        <div class="deck-count">${decksIn.length} deck${decksIn.length === 1 ? '' : 's'}</div>
+      </div>
+    </button>
+    <div class="deck-actions">
+      <button class="icon-btn-sm" data-rename-folder="${folder.id}" title="Rename folder" aria-label="Rename folder">
+        <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
+      </button>
+      <button class="icon-btn-sm danger" data-del-folder="${folder.id}" title="Delete folder" aria-label="Delete folder">
+        <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+      </button>
+    </div>`;
+  row.addEventListener('click', e => {
+    if (sidebar.classList.contains('collapsed')) { sidebar.classList.remove('collapsed'); return; }
+    if (e.target.closest('[data-rename-folder]')) {
+      const name = prompt('Rename folder:', folder.name);
+      if (name && name.trim()) {
+        folder.name = name.trim().slice(0, 40);
+        save(); renderSidebar();
+      }
+      return;
+    }
+    if (e.target.closest('[data-del-folder]')) {
+      if (confirm(`Delete folder "${folder.name}"? Its decks will stay in your library.`)) {
+        state.decks.forEach(d => { if (d.folderId === folder.id) d.folderId = null; });
+        state.folders = state.folders.filter(f => f.id !== folder.id);
+        save(); renderAll();
+      }
+      return;
+    }
+    state.collapsedFolders = state.collapsedFolders.includes(folder.id)
+      ? state.collapsedFolders.filter(id => id !== folder.id)
+      : [...state.collapsedFolders, folder.id];
+    persistCollapsedFolders();
+    row.querySelector('.folder-select').setAttribute('aria-expanded', String(!state.collapsedFolders.includes(folder.id)));
+    renderSidebar();
+  });
+  return row;
+}
+
+function renderSidebar() {
+  const list = document.getElementById('deckList');
+  list.innerHTML = '';
+  const unfiled = state.decks.filter(d => !d.folderId || !state.folders.some(f => f.id === d.folderId));
+  unfiled.forEach(deck => list.appendChild(buildDeckItem(deck)));
+  state.folders.forEach(folder => {
+    list.appendChild(buildFolderRow(folder));
+    const wrap = document.createElement('div');
+    wrap.className = 'folder-decks';
+    state.decks.filter(d => deckBelongsToFolder(d, folder.id)).forEach(deck => wrap.appendChild(buildDeckItem(deck)));
+    list.appendChild(wrap);
+  });
+}
+
+// ==================== HOME ====================
+function relativeStudyDate(timestamp) {
+  const date = new Date(timestamp);
+  const key = dateKey(date);
+  const today = new Date();
+  if (key === dateKey(today)) return `Today at ${date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  if (key === dateKey(yesterday)) return 'Yesterday';
+  const diffDays = Math.floor((today.setHours(0, 0, 0, 0) - new Date(date).setHours(0, 0, 0, 0)) / 86400000);
+  if (diffDays <= 6) return date.toLocaleDateString([], { weekday: 'long' });
+  return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+}
+
+function renderHome() {
+  const greeting = document.getElementById('homeGreeting');
+  const hour = new Date().getHours();
+  greeting.textContent = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+
+  const history = state.studyHistory || [];
+  const todayKey = dateKey();
+  const todaySeconds = history
+    .filter(entry => dateKey(entry.completedAt) === todayKey)
+    .reduce((sum, entry) => sum + entry.seconds, 0);
+
+  const studiedDays = new Set(history.map(entry => dateKey(entry.completedAt)));
+  let cursor = new Date();
+  let streak = 0;
+  if (!studiedDays.has(dateKey(cursor))) cursor.setDate(cursor.getDate() - 1);
+  while (studiedDays.has(dateKey(cursor))) {
+    streak++;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  const recentAnswers = history.slice().reverse().flatMap(entry => entry.results).slice(-50);
+  const correctAnswers = recentAnswers.filter(answer => answer.correct).length;
+  const accuracy = recentAnswers.length ? Math.round(correctAnswers / recentAnswers.length * 100) : null;
+
+  document.getElementById('homeStats').innerHTML = `
+    <article class="stat-card">
+      <div class="stat-label">Study time</div>
+      <div class="stat-value">${formatStudySeconds(todaySeconds)}</div>
+      <div class="stat-note">Today</div>
+    </article>
+    <article class="stat-card">
+      <div class="stat-label">Current streak</div>
+      <div class="stat-value">${streak} ${streak === 1 ? 'day' : 'days'}</div>
+      <div class="stat-note">Consecutive study days</div>
+    </article>
+    <article class="stat-card">
+      <div class="stat-label">Accuracy</div>
+      <div class="stat-value">${accuracy === null ? '—' : accuracy + '%'}</div>
+      <div class="stat-note">Last 50 answers</div>
+    </article>`;
+
+  const chart = document.getElementById('studyActivity');
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    const key = dateKey(date);
+    days.push({
+      date,
+      key,
+      seconds: history.filter(entry => dateKey(entry.completedAt) === key).reduce((sum, entry) => sum + entry.seconds, 0),
+    });
+  }
+  const maxSeconds = Math.max(...days.map(day => day.seconds), 1);
+  chart.innerHTML = days.map(day => {
+    const pct = day.seconds ? Math.max(4, day.seconds / maxSeconds * 100) : 0;
+    const label = day.date.toLocaleDateString([], { weekday: 'narrow' });
+    const time = day.seconds ? formatStudySeconds(day.seconds) : 'No study time';
+    return `<div class="activity-day ${day.key === todayKey ? 'today' : ''}" title="${time}">
+      <div class="activity-bar" role="img" aria-label="${time}">${day.seconds ? `<span style="height:${pct}%"></span>` : ''}</div>
+      <span class="activity-label">${label}</span>
+    </div>`;
+  }).join('');
+
+  const deckMap = new Map();
+  history.forEach(entry => {
+    if (!deckMap.has(entry.deckId)) deckMap.set(entry.deckId, {
+      id: entry.deckId, name: entry.deckName, last: entry.completedAt,
+      answers: 0, correct: 0,
+    });
+    const deckStat = deckMap.get(entry.deckId);
+    deckStat.last = Math.max(deckStat.last, entry.completedAt);
+    deckStat.answers += entry.results.length;
+    deckStat.correct += entry.results.filter(answer => answer.correct).length;
+  });
+
+  const progressRows = [...deckMap.values()]
+    .sort((a, b) => b.last - a.last)
+    .map(stat => {
+      const deck = state.decks.find(d => d.id === stat.id);
+      if (!deck || !deck.cards.length) return '';
+      const pct = stat.answers ? Math.round(stat.correct / stat.answers * 100) : 0;
+      return `<div class="deck-progress-row">
+        <div class="deck-dot" style="background:${safeColor(deck.color)}">${esc((deck.name[0] || '?').toUpperCase())}</div>
+        <div class="deck-progress-info">
+          <div class="deck-progress-name">${esc(deck.name)}</div>
+          <div class="deck-progress-meta">${pct}% accuracy · ${stat.answers} answer${stat.answers === 1 ? '' : 's'} · ${relativeStudyDate(stat.last)}</div>
+          <div class="mastery-track" role="img" aria-label="${pct}% accuracy"><div class="mastery-fill" style="width:${pct}%"></div></div>
+        </div>
+        <button class="btn-ghost" data-study-deck="${esc(deck.id)}">Study</button>
+      </div>`;
+    }).filter(Boolean).slice(0, 5);
+
+  document.getElementById('deckProgressList').innerHTML = progressRows.length
+    ? progressRows.join('')
+    : '<div class="home-empty">No study history yet. Choose a deck to begin tracking progress.</div>';
+}
+
+document.getElementById('deckProgressList').addEventListener('click', e => {
+  const btn = e.target.closest('[data-study-deck]');
+  if (!btn || !state.decks.some(d => d.id === btn.dataset.studyDeck && d.cards.length)) return;
+  state.activeDeckId = btn.dataset.studyDeck;
+  save();
+  renderSidebar();
+  openStudyModal();
+});
+
+// ==================== OVERVIEW ====================
+function renderOverview() {
+  const deck = activeDeck();
+  const wrap = document.getElementById('overviewView');
+  const emptyState = document.getElementById('emptyState');
+  if (!deck) {
+    emptyState.style.display = '';
+    document.getElementById('deckContent').style.display = 'none';
+    return;
+  }
+  emptyState.style.display = 'none';
+  document.getElementById('deckContent').style.display = '';
+  document.getElementById('ovDot').style.background = safeColor(deck.color);
+  document.getElementById('ovDot').textContent = (deck.name[0] || '?').toUpperCase();
+  document.getElementById('ovTitle').textContent = deck.name;
+  const descEl = document.getElementById('ovDesc');
+  descEl.textContent = deck.description || '';
+  descEl.style.display = deck.description ? '' : 'none';
+  const scheduleNote = document.getElementById('ovSchedule');
+  const pool = state.options.starredOnly ? deck.cards.filter(c => c.starred) : deck.cards;
+  if (deck.fsrs) {
+    const counts = fsrsCounts(deck, pool);
+    scheduleNote.style.display = '';
+    scheduleNote.innerHTML = deck.cards.length
+      ? `<span>FSRS</span><strong>${counts.reviewable} available</strong><span>· ${counts.due} due · ${counts.fresh} new</span>`
+      : '<span>FSRS</span><span>add cards to begin</span>';
+    document.getElementById('studyBtnLabel').textContent = !deck.cards.length
+      ? 'Add cards to study'
+      : counts.reviewable
+        ? `Review ${counts.reviewable} card${counts.reviewable === 1 ? '' : 's'}`
+        : 'All caught up';
+    document.getElementById('studyBtn').disabled = !counts.reviewable;
+  } else {
+    scheduleNote.style.display = 'none';
+    scheduleNote.innerHTML = '';
+    document.getElementById('studyBtnLabel').textContent = deck.cards.length ? 'Study deck' : 'Add cards to study';
+    document.getElementById('studyBtn').disabled = !deck.cards.length;
+  }
+
+  const list = document.getElementById('cardsList');
+  if (!deck.cards.length) {
+    list.innerHTML = '<div class="empty-cards"><span>No cards in this deck yet.</span><button class="btn-ghost" id="emptyAddCardBtn">Add your first card</button></div>';
+    return;
+  }
+  const query = (document.getElementById('cardSearch')?.value || '').trim().toLowerCase();
+  const shownCards = query
+    ? deck.cards.filter(c => c.front.toLowerCase().includes(query) || c.back.toLowerCase().includes(query) || (c.starred && query === 'starred'))
+    : deck.cards;
+  if (!shownCards.length) {
+    list.innerHTML = `<div class="empty-cards"><span>No cards match “${esc(query)}”.</span><button class="btn-ghost" id="clearCardSearchBtn">Clear search</button></div>`;
+    return;
+  }
+  list.innerHTML = shownCards.map(card => `
+    <div class="card-row">
+      <div class="card-front"><div class="card-text" title="${esc(card.front)}">${esc(card.front)}</div></div>
+      <div class="card-back"><div class="card-text" title="${esc(card.back)}">${esc(card.back)}</div></div>
+      <button class="icon-btn-sm star-btn ${card.starred ? 'starred' : ''}" data-star="${card.id}" title="Star" aria-label="${card.starred ? 'Unstar card' : 'Star card'}" aria-pressed="${!!card.starred}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="${card.starred ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </button>
+      <button class="icon-btn-sm" data-edit-card="${card.id}" title="Edit" aria-label="Edit card">
+        <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
+      </button>
+      <button class="icon-btn-sm danger" data-del-card="${card.id}" title="Delete" aria-label="Delete card">
+        <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+      </button>
+    </div>`).join('');
+}
+
+document.getElementById('cardSearch').addEventListener('input', renderOverview);
+document.getElementById('cardsList').addEventListener('click', e => {
+  if (e.target.closest('#clearCardSearchBtn')) {
+    const search = document.getElementById('cardSearch');
+    search.value = '';
+    search.focus();
+    renderOverview();
+    return;
+  }
+  const deck = activeDeck(); if (!deck) return;
+  if (e.target.closest('#emptyAddCardBtn')) { openCardModal(); return; }
+  const star = e.target.closest('[data-star]');
+  const edit = e.target.closest('[data-edit-card]');
+  const del = e.target.closest('[data-del-card]');
+  if (star) {
+    const c = deck.cards.find(c => c.id === star.dataset.star);
+    c.starred = !c.starred; save(); renderOverview(); renderSidebar();
+  } else if (edit) {
+    openCardModal(deck.cards.find(c => c.id === edit.dataset.editCard));
+  } else if (del) {
+    const cardIndex = deck.cards.findIndex(c => c.id === del.dataset.delCard);
+    if (cardIndex === -1) return;
+    const [removedCard] = deck.cards.splice(cardIndex, 1);
+    save(); renderOverview(); renderSidebar();
+    showToast(`Card deleted from “${deck.name}”`, {
+      label: 'Undo',
+      run: () => {
+        const target = state.decks.find(d => d.id === deck.id);
+        if (!target) { showToast('That deck no longer exists.'); return; }
+        const restoreAt = Math.min(cardIndex, target.cards.length);
+        target.cards.splice(restoreAt, 0, removedCard);
+        save(); renderAll();
+      },
+    });
+  }
+});
+
+// ==================== OPTIONS ====================
+function showStudyStep(step) {
+  document.getElementById('modeChoiceView').style.display = step === 'modes' ? '' : 'none';
+  document.getElementById('optionsView').style.display = step === 'options' ? '' : 'none';
+}
+document.getElementById('backToModes').addEventListener('click', () => showStudyStep('modes'));
+document.getElementById('sideGroup').addEventListener('click', e => {
+  const btn = e.target.closest('.seg-btn'); if (!btn) return;
+  state.options.side = btn.dataset.side;
+  [...e.currentTarget.children].forEach(b => b.classList.toggle('active', b === btn));
+  persistOptions();
+  updateStudyModal();
+});
+[...document.getElementById('modeChoiceView').querySelectorAll('.mode-card')].forEach(card =>
+  card.addEventListener('click', () => {
+    state.options.mode = card.dataset.mode;
+    showStudyStep('options');
+    persistOptions();
+    updateStudyModal();
+  }));
+document.getElementById('fsrsInfoToggle').addEventListener('change', e => {
+  const deck = activeDeck(); if (!deck) return;
+  deck.fsrs = e.target.checked;
+  save();
+  updateStudyModal();
+  renderOverview();
+});
+document.getElementById('shuffleToggle').addEventListener('change', e => { state.options.shuffle = e.target.checked; persistOptions(); });
+document.getElementById('starredToggle').addEventListener('change', e => { state.options.starredOnly = e.target.checked; persistOptions(); updateStudyModal(); });
+document.getElementById('aiDistractorToggle').addEventListener('change', e => { state.options.aiDistractors = e.target.checked; persistOptions(); updateStudyModal(); });
+document.getElementById('questionCount').addEventListener('change', e => { state.options.questionCount = e.target.value; persistOptions(); updateStudyModal(); });
+
+// ==================== AI (bring-your-own-key) ====================
+const AI_PROVIDERS = {
+  openai: {
+    label: 'OpenAI',
+    defaultModel: 'gpt-4o-mini',
+    keyUrl: 'https://platform.openai.com/api-keys',
+    keyHelp: 'Sign in at platform.openai.com, open “API keys” → “Create new secret key”, and copy it right away (it is only shown once). New accounts include free credit to start.',
+    models: ['gpt-4o-mini', 'gpt-4o', 'gpt-4.1', 'gpt-4.1-mini', 'o4-mini'],
+    build(prompt, key, model) {
+      return {
+        url: 'https://api.openai.com/v1/chat/completions',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+        body: JSON.stringify({ model, messages: [{ role: 'user', content: prompt }] }),
+      };
+    },
+    capabilities: { pdf: true },
+    fallbackModels: ['gpt-4o-mini', 'gpt-4.1-mini', 'gpt-4o'],
+    buildVision(prompt, key, model, attachment) {
+      const block = attachment.kind === 'pdf'
+        ? { type: 'file', file: { filename: attachment.name || 'document.pdf', file_data: `data:application/pdf;base64,${attachment.base64}` } }
+        : { type: 'image_url', image_url: { url: `data:${attachment.mime};base64,${attachment.base64}` } };
+      return {
+        url: 'https://api.openai.com/v1/chat/completions',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+        body: JSON.stringify({ model, messages: [{ role: 'user', content: [
+          { type: 'text', text: prompt },
+          block,
+        ] }] }),
+      };
+    },
+    parse: data => data.choices?.[0]?.message?.content,
+  },
+  gemini: {
+    label: 'Google Gemini',
+    defaultModel: 'gemini-3.5-flash',
+    keyUrl: 'https://aistudio.google.com/apikey',
+    capabilities: { pdf: true },
+    keyHelp: 'Go to Google AI Studio (aistudio.google.com) → “Get API key” → “Create API key”. The free tier is generous and no credit card is needed.',
+    models: ['gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-pro'],
+    fallbackModels: ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-pro'],
+    build(prompt, key, model) {
+      return {
+        url: `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+      };
+    },
+    buildVision(prompt, key, model, image) {
+      return {
+        url: `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [
+          { text: prompt },
+          { inline_data: { mime_type: image.mime, data: image.base64 } },
+        ] }] }),
+      };
+    },
+    parse: data => (data.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join(''),
+  },
+  anthropic: {
+    label: 'Anthropic',
+    defaultModel: 'claude-3-5-haiku-latest',
+    keyUrl: 'https://console.anthropic.com/settings/keys',
+    capabilities: { pdf: true },
+    fallbackModels: ['claude-3-5-haiku-latest', 'claude-3-5-sonnet-latest'],
+    keyHelp: 'Sign in at console.anthropic.com → “API Keys” → “Create Key”. Anthropic requires an account with credits before keys will work.',
+    models: ['claude-3-5-haiku-latest', 'claude-3-5-sonnet-latest', 'claude-sonnet-4-5', 'claude-opus-4-1'],
+    build(prompt, key, model) {
+      return {
+        url: 'https://api.anthropic.com/v1/messages',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': key,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify({ model, max_tokens: 2000, messages: [{ role: 'user', content: prompt }] }),
+      };
+    },
+    buildVision(prompt, key, model, attachment) {
+      return {
+        url: 'https://api.anthropic.com/v1/messages',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': key,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify({ model, max_tokens: 2000, messages: [{ role: 'user', content: [
+          { type: 'text', text: prompt },
+          attachment.kind === 'pdf'
+            ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: attachment.base64 } }
+            : { type: 'image', source: { type: 'base64', media_type: attachment.mime, data: attachment.base64 } },
+        ] }] }),
+      };
+    },
+    parse: data => (data.content || []).map(b => b.text || '').join(''),
+  },
+  openrouter: {
+    label: 'OpenRouter',
+    defaultModel: 'openai/gpt-4o-mini',
+    keyUrl: 'https://openrouter.ai/settings/keys',
+    keyHelp: 'Sign in at openrouter.ai → “Keys” → “Create Key”. One key gives you access to many providers (OpenAI, Anthropic, Google, Meta, and more) — top up your balance, then paste the key here.',
+    models: ['openai/gpt-4o-mini', 'google/gemini-2.5-flash', 'anthropic/claude-3.5-haiku', 'meta-llama/llama-3.3-70b-instruct'],
+    build(prompt, key, model) {
+      return {
+        url: 'https://openrouter.ai/api/v1/chat/completions',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+        body: JSON.stringify({ model, messages: [{ role: 'user', content: prompt }] }),
+      };
+    },
+    capabilities: { pdf: false },
+    buildVision(prompt, key, model, attachment) {
+      return {
+        url: 'https://openrouter.ai/api/v1/chat/completions',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+        body: JSON.stringify({ model, messages: [{ role: 'user', content: [
+          { type: 'text', text: prompt },
+          { type: 'image_url', image_url: { url: `data:${attachment.mime};base64,${attachment.base64}` } },
+        ] }] }),
+      };
+    },
+    parse: data => data.choices?.[0]?.message?.content,
+  },
+};
+
+let aiCfg = { provider: 'openai', models: {}, keys: {} };
+try {
+  const raw = localStorage.getItem('flash-ai');
+  if (raw) aiCfg = { ...aiCfg, ...JSON.parse(raw) };
+} catch (e) {}
+function saveAI() {
+  try {
+    localStorage.setItem('flash-ai', JSON.stringify(aiCfg));
+  } catch (err) {
+    console.error(err);
+    showToast('AI settings saved in this tab only — browser storage may be full or blocked.');
+  }
+}
+
+function parseJsonCards(text) {
+  let t = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
+  const m = t.match(/\[[\s\S]*\]/);
+  if (!m) throw new Error('No card list in AI response');
+  const arr = JSON.parse(m[0]);
+  const out = arr
+    .filter(c => c && typeof c.front === 'string' && typeof c.back === 'string')
+    .map(c => ({ front: c.front.trim(), back: c.back.trim() }))
+    .filter(c => c.front && c.back);
+  if (!out.length) throw new Error('AI returned no usable flashcards');
+  return out;
+}
+
+function parseJsonArray(text, answer) {
+  let t = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
+  const m = t.match(/\[[\s\S]*\]/);
+  if (!m) throw new Error('No JSON array in AI response');
+  const arr = JSON.parse(m[0]);
+  const out = arr.filter(x => typeof x === 'string' && x.trim()).map(x => x.trim());
+  const cleaned = cleanDistractors(out, answer || '');
+  if (!cleaned) throw new Error('AI returned too few usable choices');
+  return cleaned;
+}
+
+// accept many AI response shapes: {"1":[...]}, {1:[...]}, {"card_1":[...]}, [[...],[...]], or a flat list
+function parseBatchDistractors(text, count) {
+  let t = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
+  const m = t.match(/\{[\s\S]*\}/) || t.match(/\[[\s\S]*\]/);
+  if (!m) return null;
+  let parsed;
+  try { parsed = JSON.parse(m[0]); } catch (e) { return null; }
+  let perCard = null;
+  if (Array.isArray(parsed)) {
+    if (parsed.every(x => Array.isArray(x))) perCard = parsed;
+    else if (parsed.every(x => typeof x === 'string' && x.trim()) && parsed.length >= count * 2) {
+      perCard = Array.from({ length: count }, (_, i) => parsed.slice(i * 3, i * 3 + 3));
+    }
+  } else if (parsed && typeof parsed === 'object') {
+    perCard = [];
+    for (let i = 1; i <= count; i++) {
+      perCard.push(parsed[String(i)] || parsed[i] || parsed['card_' + i] || parsed['Card ' + i] || null);
+    }
+  }
+  return perCard;
+}
+
+// drop blanks + any distractor that duplicates the correct answer; keep 2-3
+function cleanDistractors(arr, answer) {
+  if (!Array.isArray(arr)) return null;
+  const seen = new Set([String(answer || '').trim().toLowerCase()]);
+  const out = arr
+    .filter(x => typeof x === 'string' && x.trim())
+    .map(x => x.trim())
+    .filter(x => {
+      const key = x.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  return out.length >= 2 ? out.slice(0, 3) : null;
+}
+
+function hashText(value) {
+  const text = String(value || '');
+  let hash = 2166136261;
+  for (let i = 0; i < text.length; i++) {
+    hash ^= text.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `${text.length}-${(hash >>> 0).toString(36)}`;
+}
+
+function aiDistractorKey(card, side) {
+  const question = side === 'front' ? card.front : card.back;
+  const answer = side === 'front' ? card.back : card.front;
+  return `${side}|${hashText(question)}|${hashText(answer)}`;
+}
+
+function buildDeckDistractors(deck, card, side) {
+  const answer = side === 'front' ? card.back : card.front;
+  const values = deck.cards
+    .filter(c => c.id !== card.id)
+    .map(c => side === 'front' ? c.back : c.front)
+    .filter(value => value && value.trim() && value.trim().toLowerCase() !== answer.trim().toLowerCase());
+  const wrong = [...new Set(values.map(v => v.trim()))].slice(0, 3);
+  const generic = ['Not this answer', 'None of these', 'Partly correct'];
+  while (wrong.length < 3) {
+    const option = generic.find(g => g.toLowerCase() !== answer.trim().toLowerCase() && !wrong.includes(g));
+    if (!option) break;
+    wrong.push(option);
+  }
+  return shuffleArr([answer, ...wrong]);
+}
+
+const aiCache = {};
+const AI = {
+  isConfigured() {
+    const p = AI_PROVIDERS[aiCfg.provider];
+    return !!(p && (aiCfg.keys[aiCfg.provider] || '').trim());
+  },
+  currentConfig() {
+    const p = AI_PROVIDERS[aiCfg.provider];
+    return { provider: p, key: (aiCfg.keys[aiCfg.provider] || '').trim(), model: (aiCfg.models[aiCfg.provider] || '').trim() || p.defaultModel };
+  },
+  async _request(provider, key, model, build) {
+    const req = build();
+    let res;
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 60000);
+      res = await fetch(req.url, { method: 'POST', headers: req.headers, body: req.body, signal: ctrl.signal });
+      clearTimeout(timer);
+    } catch (e) {
+      throw new Error(`${provider.label}: network error or timeout`);
+    }
+    if (!res.ok) {
+      let msg = `${res.status} ${res.statusText}`;
+      try {
+        const j = await res.json();
+        msg = j.error?.message || j.message || JSON.stringify(j).slice(0, 140);
+      } catch (e) {}
+      throw new Error(`${provider.label}: ${msg}`);
+    }
+    const data = await res.json();
+    const text = provider.parse(data);
+    if (!text || !text.trim()) throw new Error(`${provider.label}: empty response`);
+    return text.trim();
+  },
+  // tries the chosen model first; on transient errors (overloaded/rate limits) cycles through
+  // the provider's other models before giving up
+  async _requestWithFallback(buildForModel) {
+    const { provider, key, model } = this.currentConfig();
+    const chain = [model, ...(provider.fallbackModels || []).filter(m => m !== model)];
+    let lastErr = null;
+    for (let i = 0; i < chain.length; i++) {
+      try {
+        return await this._request(provider, key, chain[i], () => buildForModel(chain[i]));
+      } catch (err) {
+        lastErr = err;
+        const transient = /overload|high demand|rate|429|503|unavailable|exhausted|internal/i.test(err.message);
+        if (!transient || i === chain.length - 1) {
+          if (transient && i === chain.length - 1) {
+            throw new Error(`${provider.label}: all models are busy right now — try again in a minute`);
+          }
+          throw err;
+        }
+        await new Promise(r => setTimeout(r, 700));
+      }
+    }
+    throw lastErr;
+  },
+  async complete(prompt) {
+    const { provider, key } = this.currentConfig();
+    if (!key) throw new Error('No API key set — add one in Settings.');
+    return this._requestWithFallback(build => provider.build(prompt, key, build));
+  },
+  async completeVision(prompt, image) {
+    const { provider, key } = this.currentConfig();
+    if (!key) throw new Error('No API key set — add one in Settings.');
+    return this._requestWithFallback(build => provider.buildVision(prompt, key, build, image));
+  },
+  async generateDistractorsBatch(cards, side) {
+    const quote = s => s.replace(/"/g, String.fromCharCode(34));
+    const list = cards.map((c, i) => {
+      const q = side === 'front' ? c.front : c.back;
+      const a = side === 'front' ? c.back : c.front;
+      return `Card ${i + 1}:\nQuestion: "${quote(q)}"\nCorrect answer: "${quote(a)}"`;
+    }).join('\n\n');
+    const prompt = `You are writing distractors for multiple-choice flashcard quizzes. For each numbered card below, generate exactly 3 plausible but INCORRECT alternative answers for its question. Match the format and rough length of the correct answer. They must be clearly wrong to someone who knows the material.\n\n${list}\n\nRespond with ONLY a JSON object using the card numbers as string keys, each mapping to an array of exactly 3 distractor strings, like {"1": ["a", "b", "c"], "2": ["a", "b", "c"]}. No other text.`;
+    const text = await this.complete(prompt);
+    const perCard = parseBatchDistractors(text, cards.length);
+    if (!perCard) throw new Error('Could not parse AI response');
+    return cards.map((c, i) => {
+      const answer = side === 'front' ? c.back : c.front;
+      return cleanDistractors(perCard[i], answer);
+    });
+  },
+  async generateDistractors(card, side) {
+    const cacheKey = aiDistractorKey(card, side);
+    if (aiCache[cacheKey]) return aiCache[cacheKey];
+    const question = side === 'front' ? card.front : card.back;
+    const answer = side === 'front' ? card.back : card.front;
+    const prompt = `You are writing distractors for a multiple-choice flashcard quiz. Question: "${question.replace(/"/g, String.fromCharCode(34))}" Correct answer: "${answer.replace(/"/g, String.fromCharCode(34))}" Generate exactly 3 plausible but INCORRECT alternative answers. Match the format and rough length of the correct answer. They must be clearly wrong to someone who knows the material. Respond with ONLY a JSON array of 3 strings and nothing else.`;
+    const out = parseJsonArray(await this.complete(prompt), answer);
+    aiCache[cacheKey] = out;
+    return out;
+  },
+};
+
+
+// ==================== FSRS ====================
+// FSRS-4.5-style memory model. Stability is measured in days; difficulty is 1-10.
+// These defaults are public reference weights, optimized around 90% requested retention.
+const FSRS_WEIGHTS = Object.freeze([
+  0.4872, 1.4003, 3.7145, 13.8206, 5.1618, -0.58, 0.8971, 0.0319,
+  1.6474, -0.8764, 0.5753, 1.6513, 3.1618, 3.8588, 0.1379, 1.6167, 0.4,
+]);
+const FSRS_DECAY = -0.5;
+const FSRS_FACTOR = 19 / 81;
+const FSRS_REQUEST_RETENTION = 0.9;
+const FSRS_MINUTE = 60 * 1000;
+
+function clampFsrsNumber(value, min, max, fallback) {
+  const n = Number(value);
+  return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback;
+}
+
+function normalizeFsrsState(value) {
+  if (!value || typeof value !== 'object') return null;
+  const due = new Date(value.due).getTime();
+  const last = new Date(value.last || value.due).getTime();
+  const stability = Number(value.stability);
+  const difficulty = Number(value.difficulty);
+  if (!Number.isFinite(due) || !Number.isFinite(last) || !stability || !difficulty) return null;
+  return {
+    stability,
+    difficulty,
+    due,
+    last,
+    reps: Math.max(0, Math.floor(Number(value.reps) || 0)),
+    lapses: Math.max(0, Math.floor(Number(value.lapses) || 0)),
+  };
+}
+
+function fsrsInitialStability(rating) {
+  return FSRS_WEIGHTS[Math.min(3, Math.max(0, rating - 1))];
+}
+
+function fsrsInitialDifficulty(rating) {
+  return clampFsrsNumber(FSRS_WEIGHTS[4] - Math.exp(FSRS_WEIGHTS[5] * (rating - 1)) + 1, 1, 10, 5);
+}
+
+function fsrsRetrievability(state, now = Date.now()) {
+  if (!state) return 0;
+  const elapsed = Math.max(0, now - state.last) / 86400000;
+  return Math.pow(1 + FSRS_FACTOR * elapsed / state.stability, FSRS_DECAY);
+}
+
+function fsrsStabilityAfterSuccess(state, rating, retrievability) {
+  const hardPenalty = rating === 2 ? FSRS_WEIGHTS[15] : 1;
+  const easyBonus = rating === 4 ? FSRS_WEIGHTS[15] : 1;
+  const growth = 1 + Math.exp(FSRS_WEIGHTS[8]) * (11 - state.difficulty)
+    * Math.pow(state.stability, -FSRS_WEIGHTS[9])
+    * (Math.exp((1 - retrievability) * FSRS_WEIGHTS[10]) - 1)
+    * hardPenalty * easyBonus;
+  const strength = rating === 2 ? 1 - FSRS_WEIGHTS[16] : rating === 3 ? 1 : 1 + FSRS_WEIGHTS[16];
+  return Math.max(0.01, state.stability * growth * strength);
+}
+
+function fsrsStabilityAfterFailure(state, retrievability) {
+  return Math.max(0.01, Math.min(state.stability, FSRS_WEIGHTS[11]
+    * Math.pow(state.difficulty, -FSRS_WEIGHTS[12])
+    * (Math.pow(state.stability + 1, FSRS_WEIGHTS[13]) - 1)
+    * Math.exp((1 - retrievability) * FSRS_WEIGHTS[14])));
+}
+
+function fsrsMeanReversion(initial, current) {
+  return FSRS_WEIGHTS[7] * initial + (1 - FSRS_WEIGHTS[7]) * current;
+}
+
+function fsrsNextDifficulty(currentDifficulty, rating) {
+  const linear = currentDifficulty - FSRS_WEIGHTS[6] * (rating - 3);
+  return clampFsrsNumber(fsrsMeanReversion(fsrsInitialDifficulty(rating), linear), 1, 10, 5);
+}
+
+function fsrsIntervalDays(stability) {
+  const interval = stability / FSRS_FACTOR * (Math.pow(FSRS_REQUEST_RETENTION, 1 / FSRS_DECAY) - 1);
+  return Math.max(0.01, interval);
+}
+
+function fsrsSchedule(card, rating, now = Date.now()) {
+  const safeRating = Math.min(4, Math.max(1, Math.round(Number(rating) || 3)));
+  const current = normalizeFsrsState(card?.schedule);
+  let stability;
+  let difficulty;
+
+  if (!current) {
+    stability = fsrsInitialStability(safeRating);
+    difficulty = fsrsInitialDifficulty(safeRating);
+  } else {
+    const retrievability = fsrsRetrievability(current, now);
+    stability = safeRating === 1
+      ? fsrsStabilityAfterFailure(current, retrievability)
+      : fsrsStabilityAfterSuccess(current, safeRating, retrievability);
+    difficulty = fsrsNextDifficulty(current.difficulty, safeRating);
+  }
+
+  // Keep a short recovery step for lapses; FSRS stability is retained for the next review.
+  let interval = fsrsIntervalDays(stability);
+  if (safeRating === 1) interval = Math.min(interval, 10 / 1440);
+  if (safeRating === 2) interval = Math.min(interval, 1);
+
+  return {
+    stability,
+    difficulty,
+    due: now + Math.max(FSRS_MINUTE, interval * 86400000),
+    last: now,
+    reps: (current?.reps || 0) + 1,
+    lapses: (current?.lapses || 0) + (safeRating === 1 ? 1 : 0),
+  };
+}
+
+function isCardDue(card, now = Date.now()) {
+  const schedule = normalizeFsrsState(card.schedule);
+  return !schedule || schedule.due <= now;
+}
+
+function fsrsQueue(deck, cards = deck.cards, now = Date.now()) {
+  const due = [], fresh = [];
+  cards.forEach(card => (card.schedule ? due : fresh).push(card));
+  due.sort((a, b) => a.schedule.due - b.schedule.due);
+  return [...due, ...fresh];
+}
+
+function fsrsCounts(deck, cards = deck.cards, now = Date.now()) {
+  const due = cards.filter(c => c.schedule && c.schedule.due <= now).length;
+  const fresh = cards.filter(c => !c.schedule).length;
+  return { due, fresh, total: cards.length, reviewable: due + fresh };
+}
+
+// ==================== STUDY SESSION ====================
+function shuffleArr(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+
+function isFsrsActive(deck, mode = state.options.mode) {
+  return !!deck?.fsrs && mode !== 'quiz';
+}
+function startSession(deck, cards) {
+  if (!cards || !cards.length) return;
+  if (session?.results.length) saveStudySession();
+  session = null;
+  if (isFsrsActive(deck)) {
+    const due = cards.filter(c => c.schedule && c.schedule.due <= Date.now());
+    const fresh = cards.filter(c => !c.schedule);
+    cards = [
+      ...(state.options.shuffle ? shuffleArr(due) : due),
+      ...(state.options.shuffle ? shuffleArr(fresh) : fresh),
+    ];
+  } else if (state.options.shuffle) {
+    cards = shuffleArr(cards);
+  }
+  if (state.options.questionCount !== 'all') {
+    cards = cards.slice(0, parseInt(state.options.questionCount));
+  }
+  session = {
+    deck, cards, index: 0, correct: 0, wrong: 0,
+    results: [], mode: state.options.mode, side: state.options.side, answered: false,
+    distractors: {}, startedAt: 0, savedStats: false,
+  };
+  showView('study');
+  if (state.options.mode === 'quiz' && state.options.aiDistractors && AI.isConfigured()) {
+    prefetchDistractors();
+  } else {
+    renderStudy();
+  }
+}
+
+async function prefetchDistractors() {
+  const current = session;
+  const inner = document.getElementById('studyInner');
+  const renderPreparing = (done, total) => {
+    inner.innerHTML = `
+      <div class="study-topbar">
+        <button class="btn-ghost" id="cancelPrep">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+        <div class="study-deck-name">
+          <span class="deck-dot" style="width:20px;height:20px;border-radius:6px;font-size:10px;background:${safeColor(current.deck.color)}">${esc((current.deck.name[0] || '?').toUpperCase())}</span>
+          ${esc(current.deck.name)}
+        </div>
+        <div style="font-size:13px;color:var(--text-3);font-weight:500;font-variant-numeric:tabular-nums">${done} / ${total}</div>
+      </div>
+      <div style="padding:60px 0;text-align:center">
+        <div class="quiz-loading" style="max-width:420px;margin:0 auto 18px">Generating AI distractors for all ${total} question${total === 1 ? '' : 's'}…</div>
+        <div class="progress-track" style="margin:0"><div class="progress-fill" style="width:${total ? Math.round(done / total * 100) : 0}%"></div></div>
+      </div>`;
+    document.getElementById('cancelPrep').addEventListener('click', () => {
+      session = null;
+      showView('home');
+      renderAll();
+    });
+  };
+
+  const cards = current.cards;
+  const total = cards.length;
+  let done = 0;
+
+  // pull already-cached cards first (e.g. "study again")
+  const remaining = [];
+  for (const card of cards) {
+    const key = aiDistractorKey(card, current.side);
+    if (aiCache[key]) {
+      current.distractors[key] = aiCache[key];
+      done++;
+    } else {
+      remaining.push(card);
+    }
+  }
+
+  // split the rest into batches, run a few batches in parallel
+  const BATCH_SIZE = 5, CONCURRENCY = 3;
+  const batches = [];
+  for (let i = 0; i < remaining.length; i += BATCH_SIZE) {
+    batches.push(remaining.slice(i, i + BATCH_SIZE));
+  }
+
+  renderPreparing(done, total);
+
+  let nextBatch = 0;
+  const worker = async () => {
+    while (nextBatch < batches.length) {
+      if (session !== current) return;
+      const batch = batches[nextBatch++];
+      let results = await AI.generateDistractorsBatch(batch, current.side)
+        .catch(async () => {
+          await new Promise(r => setTimeout(r, 1500)); // rate limits: back off and retry
+          if (session !== current) return batch.map(() => null);
+          return AI.generateDistractorsBatch(batch, current.side)
+            .catch(async () => {
+              await new Promise(r => setTimeout(r, 4000)); // second backoff, last try
+              if (session !== current) return batch.map(() => null);
+              return AI.generateDistractorsBatch(batch, current.side).catch(() => batch.map(() => null));
+            });
+        });
+      if (session !== current) return;
+      results.forEach((r, j) => {
+        const key = aiDistractorKey(batch[j], current.side);
+        if (r) {
+          aiCache[key] = r;
+          current.distractors[key] = r;
+        } else if (!(key in current.distractors)) {
+          current.distractors[key] = null; // fall back to deck-based choices for this card
+        }
+        done++;
+      });
+      renderPreparing(done, total);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(CONCURRENCY, batches.length) }, worker));
+  if (session !== current) return;
+
+  // repair pass: individually retry any card the batch pass failed on
+  for (const card of current.cards) {
+    if (session !== current) return;
+    const key = aiDistractorKey(card, current.side);
+    if (current.distractors[key]) continue;
+    try {
+      await AI.generateDistractors(card, current.side);
+      current.distractors[key] = aiCache[key];
+      renderPreparing(done, total);
+    } catch (err) { /* leave as fallback for this card */ }
+  }
+  if (session !== current) return;
+  renderStudy();
+}
+
+function eligibleCards(deck, mode = state.options.mode) {
+  const pool = state.options.starredOnly ? deck.cards.filter(c => c.starred) : [...deck.cards];
+  return isFsrsActive(deck, mode) ? pool.filter(c => isCardDue(c)) : pool;
+}
+function updateStudyModal() {
+  const deck = activeDeck(); if (!deck) return;
+  const pool = state.options.starredOnly ? deck.cards.filter(c => c.starred) : [...deck.cards];
+  const eligible = eligibleCards(deck).length;
+  const n = state.options.questionCount === 'all' ? eligible : Math.min(eligible, parseInt(state.options.questionCount));
+  const btn = document.getElementById('startStudyBtn');
+  btn.disabled = !n;
+  btn.textContent = n
+    ? `Start ${isFsrsActive(deck) ? 'review' : 'session'} · ${n} question${n === 1 ? '' : 's'}`
+    : 'No cards to study';
+  const schedulerRow = document.getElementById('fsrsInfoRow');
+  schedulerRow.style.display = state.options.mode === 'quiz' ? 'none' : '';
+  if (isFsrsActive(deck)) {
+    const counts = fsrsCounts(deck, pool);
+    schedulerRow.querySelector('#fsrsInfoSub').textContent = counts.reviewable
+      ? `${counts.due} due · ${counts.fresh} new — Again, Hard, Good, and Easy update the schedule`
+      : 'No cards are due. Turn FSRS off to preview the whole deck.';
+  } else {
+    schedulerRow.querySelector('#fsrsInfoSub').textContent = 'Use FSRS for long-term retention. Turn it off for short-term study.';
+  }
+  const row = document.getElementById('aiDistractorRow');
+  row.style.display = state.options.mode === 'quiz' ? '' : 'none';
+  const sub = document.getElementById('aiDistractorSub');
+  if (!AI.isConfigured()) {
+    sub.textContent = 'Add an AI provider and API key in Settings to enable this';
+    sub.style.color = 'var(--amber)';
+  } else {
+    sub.textContent = `Use ${AI_PROVIDERS[aiCfg.provider].label} to write plausible wrong answers`;
+    sub.style.color = '';
+  }
+}
+function openStudyModal() {
+  const deck = activeDeck(); if (!deck) return;
+  document.getElementById('studyModalDeck').textContent = deck.name;
+  document.querySelectorAll('#sideGroup .seg-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.side === state.options.side));
+  document.getElementById('shuffleToggle').checked = state.options.shuffle;
+  document.getElementById('starredToggle').checked = state.options.starredOnly;
+  document.getElementById('aiDistractorToggle').checked = state.options.aiDistractors;
+  document.getElementById('fsrsInfoToggle').checked = !!deck.fsrs;
+  document.getElementById('questionCount').value = state.options.questionCount;
+  showStudyStep('modes');
+  updateStudyModal();
+  openModal(document.getElementById('studyModal'));
+}
+document.getElementById('studyBtn').addEventListener('click', openStudyModal);
+document.getElementById('startStudyBtn').addEventListener('click', () => {
+  const deck = activeDeck(); if (!deck) return;
+  const cards = eligibleCards(deck);
+  if (!cards.length) return;
+  document.getElementById('studyModal').classList.remove('open');
+  startSession(deck, cards);
+});
+
+function showView(name) {
+  document.getElementById('homeView').classList.toggle('active', name === 'home');
+  document.getElementById('overviewView').classList.toggle('active', name === 'overview');
+  document.getElementById('studyView').classList.toggle('active', name === 'study');
+  const homeNav = document.getElementById('homeNav');
+  homeNav.classList.toggle('active', name === 'home');
+  if (name === 'home') homeNav.setAttribute('aria-current', 'page');
+  else homeNav.removeAttribute('aria-current');
+  document.getElementById('main').scrollTop = 0;
+}
+
+document.getElementById('homeNav').addEventListener('click', () => {
+  endActiveSession();
+  if (isMobileViewport.matches) setMobileSidebar(false);
+  showView('home');
+  renderHome();
+});
+
+function renderStudy() {
+  if (!session.startedAt) session.startedAt = Date.now();
+  const inner = document.getElementById('studyInner');
+  const { deck, cards, index } = session;
+  if (index >= cards.length) { renderSummary(); return; }
+  const card = cards[index];
+  const question = session.side === 'front' ? card.front : card.back;
+  const answer = session.side === 'front' ? card.back : card.front;
+  const qLabel = session.side === 'front' ? 'Front' : 'Back';
+  const aLabel = session.side === 'front' ? 'Back' : 'Front';
+  const progress = Math.round((index / cards.length) * 100);
+
+  let body = '';
+  if (session.mode === 'flashcards') {
+    body = `
+      <div class="flashcard-scene">
+        <div class="flashcard" id="flashcard" role="button" tabindex="0" aria-pressed="false" aria-label="Reveal answer">
+          <div class="flashcard-face front">
+            <div class="flashcard-label">${qLabel}</div>
+            <div class="flashcard-text">${esc(question)}</div>
+          </div>
+          <div class="flashcard-face back">
+            <div class="flashcard-label">${aLabel}</div>
+            <div class="flashcard-text">${esc(answer)}</div>
+          </div>
+        </div>
+      </div>
+      <div class="answer-btns" id="answerBtns" style="visibility:hidden${deck.fsrs ? ' fsrs' : ''}">
+        ${deck.fsrs ? `
+          <button class="ans-btn again" data-rating="1"><span>Again</span></button>
+          <button class="ans-btn hard" data-rating="2"><span>Hard</span></button>
+          <button class="ans-btn good" data-rating="3"><span>Good</span></button>
+          <button class="ans-btn easy" data-rating="4"><span>Easy</span></button>
+        ` : `
+          <button class="ans-btn again" data-ans="wrong">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+            Still learning
+          </button>
+          <button class="ans-btn good" data-ans="correct">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            Got it
+          </button>
+        `}
+      </div>
+      <div class="study-hint">${deck.fsrs
+        ? 'Space flips or confirms · 1 Again · 2 Hard · 3 Good · 4 Easy · Esc exits'
+        : 'Space flips or confirms · 1 still learning · 2 got it · Esc exits'}`;
+  } else {
+    body = `
+      <div class="flashcard-scene">
+        <div class="flashcard-face front" style="position:relative;height:280px;cursor:default">
+          <div class="flashcard-label">Question ${index + 1}</div>
+          <div class="flashcard-text">${esc(question)}</div>
+        </div>
+      </div>
+      <div id="quizChoices"></div>
+      <div class="study-hint">Press 1–4 to answer · Esc exits</div>`;
+  }
+
+  inner.innerHTML = `
+    <div class="study-topbar">
+      <button class="btn-ghost" id="exitStudy" aria-label="Exit study session">
+        <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </button>
+      <div class="study-deck-name">
+        <span class="deck-dot" style="width:20px;height:20px;border-radius:6px;font-size:10px;background:${safeColor(deck.color)}">${esc((deck.name[0] || '?').toUpperCase())}</span>
+        ${esc(deck.name)}
+      </div>
+      <div style="font-size:13px;color:var(--text-3);font-weight:500;font-variant-numeric:tabular-nums">${index + 1} / ${cards.length}</div>
+    </div>
+    <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}" aria-label="Study progress"><div class="progress-fill" style="width:${progress}%"></div></div>
+    ${body}`;
+
+  document.getElementById('exitStudy').addEventListener('click', () => {
+    saveStudySession();
+    showView('home');
+    renderAll();
+  });
+
+  if (session.mode === 'flashcards') {
+    const fc = document.getElementById('flashcard');
+    const flipCard = () => {
+      const flipped = fc.classList.toggle('flipped');
+      fc.setAttribute('aria-pressed', String(flipped));
+      fc.setAttribute('aria-label', flipped ? 'Show question' : 'Reveal answer');
+      document.getElementById('answerBtns').style.visibility = 'visible';
+    };
+    fc.addEventListener('click', flipCard);
+    fc.addEventListener('keydown', e => {
+      if ((e.key === 'Enter' || e.key === ' ') && document.activeElement === fc) {
+        e.preventDefault();
+        flipCard();
+      }
+    });
+    document.getElementById('answerBtns').addEventListener('click', e => {
+      const btn = e.target.closest('[data-ans], [data-rating]'); if (!btn) return;
+      const rating = btn.dataset.rating ? Number(btn.dataset.rating) : (btn.dataset.ans === 'correct' ? 3 : 1);
+      recordResult(btn.dataset.ans === 'correct', rating);
+    });
+  } else {
+    const container = document.getElementById('quizChoices');
+    container.addEventListener('click', e => {
+      const btn = e.target.closest('.quiz-choice');
+      if (!btn || session.answered) return;
+      session.answered = true;
+      const isCorrect = btn.dataset.correct === '1';
+      document.querySelectorAll('.quiz-choice').forEach(b => {
+        b.disabled = true;
+        if (b.dataset.correct === '1') b.classList.add('correct');
+        else if (b === btn) b.classList.add('wrong');
+      });
+      setTimeout(() => recordResult(isCorrect, isCorrect ? 3 : 1), 900);
+    });
+    const deckDistractors = () => buildDeckDistractors(deck, card, session.side);
+    const fill = (choices, note) => {
+      if (session.answered || session.cards[session.index] !== card) return;
+      container.innerHTML = choices.map((ch, ci) => `<button class="quiz-choice" data-correct="${ch === answer ? '1' : ''}" aria-label="Answer ${ci + 1}: ${esc(ch)}">${esc(ch)}</button>`).join('')
+        + (note ? `<div class="quiz-note">${esc(note)}</div>` : '');
+    };
+    const key = aiDistractorKey(card, session.side);
+    if (session.distractors && key in session.distractors) {
+      const pre = session.distractors[key];
+      if (pre) fill(shuffleArr([answer, ...pre]));
+      else fill(deckDistractors(), 'AI distractors unavailable for this card — using cards from this deck.');
+    } else if (state.options.aiDistractors && AI.isConfigured()) {
+      container.innerHTML = '<div class="quiz-loading">Generating AI distractors…</div>';
+      AI.generateDistractors(card, session.side)
+        .then(aiChoices => fill(shuffleArr([answer, ...aiChoices])))
+        .catch(err => fill(deckDistractors(), `AI distractors unavailable (${err.message}) — using cards from this deck.`));
+    } else if (state.options.aiDistractors) {
+      fill(deckDistractors(), 'Set an AI provider and API key in Settings to use AI distractors.');
+    } else {
+      fill(deckDistractors());
+    }
+  }
+}
+
+function recordResult(correct, rating = correct ? 3 : 1) {
+  const card = session.cards[session.index];
+  if (isFsrsActive(session.deck, session.mode) && card) {
+    card.schedule = fsrsSchedule(card, rating);
+    save();
+  }
+  session.results.push(correct);
+  if (correct) session.correct++; else session.wrong++;
+  session.index++;
+  session.answered = false;
+  renderStudy();
+}
+
+function renderSummary() {
+  saveStudySession();
+  const inner = document.getElementById('studyInner');
+  const { deck, cards, correct } = session;
+  const missed = cards.filter((c, i) => !session.results[i]);
+  const pct = cards.length ? Math.round(correct / cards.length * 100) : 0;
+  const R = 50, C = 2 * Math.PI * R;
+  const color = pct >= 80 ? 'var(--green)' : pct >= 50 ? 'var(--amber)' : 'var(--red)';
+  inner.innerHTML = `
+    <div class="summary-wrap">
+      <div class="summary-ring">
+        <svg width="120" height="120">
+          <circle cx="60" cy="60" r="${R}" fill="none" stroke="var(--surface-2)" stroke-width="7"/>
+          <circle cx="60" cy="60" r="${R}" fill="none" stroke="${color}" stroke-width="7" stroke-linecap="round"
+            stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - pct / 100)}" style="transition:stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1)"/>
+        </svg>
+        <div class="summary-pct">${pct}%</div>
+      </div>
+      <div class="summary-title">Session complete</div>
+      <div class="summary-sub">You got ${correct} of ${cards.length} correct in “${esc(deck.name)}”.${missed.length ? ` ${missed.length} card${missed.length === 1 ? '' : 's'} to review.` : ''}</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn-secondary" id="summaryBack">Back home</button>
+        <button class="btn-secondary" id="summaryAgain">Study again</button>
+        ${missed.length ? `<button class="btn-primary" id="summaryMissed">Study ${missed.length} missed card${missed.length === 1 ? '' : 's'}</button>` : ''}
+      </div>
+    </div>`;
+  document.getElementById('summaryBack').addEventListener('click', () => { endActiveSession(); showView('home'); renderAll(); });
+  const reviewAgain = eligibleCards(deck, session.mode);
+  const againBtn = document.getElementById('summaryAgain');
+  againBtn.textContent = isFsrsActive(deck, session.mode) && !reviewAgain.length ? 'All caught up' : 'Study again';
+  againBtn.disabled = !reviewAgain.length;
+  againBtn.addEventListener('click', () => { if (reviewAgain.length) startSession(deck, reviewAgain); });
+  const missedBtn = document.getElementById('summaryMissed');
+  if (missedBtn) missedBtn.addEventListener('click', () => startSession(deck, missed));
+}
+
+// ==================== DECK MODAL ====================
+const deckModal = document.getElementById('deckModal');
+document.getElementById('newDeckBtn').addEventListener('click', () => openDeckModal());
+function openDeckModal(deck) {
+  state.editingDeckId = deck?.id || null;
+  document.getElementById('deckModeTabs').style.display = deck ? 'none' : '';
+  document.getElementById('deckModalTitle').textContent = deck ? 'Edit deck' : 'New deck';
+  document.getElementById('deckSaveBtn').textContent = deck ? 'Save changes' : 'Create deck';
+  document.getElementById('deckNameInput').value = deck?.name || '';
+  document.getElementById('deckDescInput').value = deck?.description || '';
+  document.getElementById('deckFsrsToggle').checked = !!deck?.fsrs;
+  state.selectedColor = deck?.color || COLORS[state.decks.length % COLORS.length];
+  renderColorPicker();
+  clearTimeout(deckFocusTimer);
+  showDeckTab('create');
+  openModal(deckModal, document.getElementById('deckNameInput'));
+  deckFocusTimer = setTimeout(() => document.getElementById('deckNameInput').focus(), 50);
+}
+
+let deckFocusTimer = null;
+function showDeckTab(tab) {
+  clearTimeout(deckFocusTimer);
+  document.getElementById('deckCreateTab').style.display = tab === 'create' ? '' : 'none';
+  document.getElementById('deckImportTab').style.display = tab === 'import' ? '' : 'none';
+  [...document.getElementById('deckModeTabs').children].forEach(b =>
+    b.classList.toggle('active', b.dataset.tab === tab));
+  if (tab === 'create') {
+    document.getElementById('deckModalTitle').textContent = state.editingDeckId ? 'Edit deck' : 'New deck';
+  } else {
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    importTargetDeck = null;
+    syncImportTabMode();
+    document.getElementById('deckModalTitle').textContent = 'Import deck';
+    resetImportForm();
+    setImportFile(null);
+    updateImportPreview();
+  }
+}
+document.getElementById('deckModeTabs').addEventListener('click', e => {
+  const btn = e.target.closest('.seg-btn'); if (!btn) return;
+  showDeckTab(btn.dataset.tab);
+});
+function renderColorPicker() {
+  document.getElementById('colorPicker').innerHTML = COLORS.map(c =>
+    `<button type="button" class="color-swatch ${c === state.selectedColor ? 'selected' : ''}" data-color="${c}" style="background:${c}" aria-pressed="${c === state.selectedColor}" aria-label="Use deck color ${c}"></button>`).join('');
+}
+document.getElementById('colorPicker').addEventListener('click', e => {
+  const sw = e.target.closest('.color-swatch'); if (!sw) return;
+  state.selectedColor = sw.dataset.color; renderColorPicker();
+});
+function setFieldError(el, errorEl, show) {
+  el.setAttribute('aria-invalid', show ? 'true' : 'false');
+  errorEl.classList.toggle('show', show);
+}
+document.getElementById('deckNameInput').addEventListener('input', e => setFieldError(e.target, document.getElementById('deckNameError'), false));
+document.getElementById('deckSaveBtn').addEventListener('click', () => {
+  const nameInput = document.getElementById('deckNameInput');
+  const name = nameInput.value.trim();
+  if (!name) { setFieldError(nameInput, document.getElementById('deckNameError'), true); nameInput.focus(); return; }
+  setFieldError(nameInput, document.getElementById('deckNameError'), false);
+  const desc = document.getElementById('deckDescInput').value.trim();
+  if (state.editingDeckId) {
+    const deck = state.decks.find(d => d.id === state.editingDeckId);
+    deck.name = name; deck.description = desc; deck.color = state.selectedColor; deck.fsrs = document.getElementById('deckFsrsToggle').checked;
+  } else {
+    const deck = { id: uid(), name, description: desc, color: state.selectedColor, fsrs: document.getElementById('deckFsrsToggle').checked, cards: [] };
+    state.decks.push(deck);
+    state.activeDeckId = deck.id;
+  }
+  save(); deckModal.classList.remove('open'); renderAll();
+});
+
+// ==================== CARD MODAL ====================
+const cardModal = document.getElementById('cardModal');
+document.getElementById('addCardBtn').addEventListener('click', () => openAddCards());
+
+function openCardModal(card) {
+  const deck = activeDeck(); if (!deck) return;
+  state.editingCardId = card?.id || null;
+  importTargetDeck = deck;
+  document.getElementById('cardModeTabs').style.display = card ? 'none' : '';
+  document.getElementById('cardModalTitle').textContent = card ? 'Edit card' : `Add cards to “${deck.name}”`;
+  document.getElementById('cardSaveBtn').textContent = card ? 'Save changes' : 'Add card';
+  document.getElementById('cardFrontInput').value = card?.front || '';
+  document.getElementById('cardBackInput').value = card?.back || '';
+  showCardTab('manual');
+  openModal(cardModal, document.getElementById('cardFrontInput'));
+  if (card) setTimeout(() => document.getElementById('cardFrontInput').focus(), 50);
+}
+function openAddCards() {
+  state.editingCardId = null;
+  openCardModal(null);
+}
+['cardFrontInput','cardBackInput'].forEach(id => document.getElementById(id).addEventListener('input', e => setFieldError(e.target, document.getElementById(id.replace('Input','Error')), false)));
+document.getElementById('cardSaveBtn').addEventListener('click', () => {
+  const deck = activeDeck(); if (!deck) return;
+  const frontEl = document.getElementById('cardFrontInput');
+  const backEl = document.getElementById('cardBackInput');
+  const front = frontEl.value.trim();
+  const back = backEl.value.trim();
+  const invalid = !front || !back;
+  setFieldError(frontEl, document.getElementById('cardFrontError'), invalid);
+  setFieldError(backEl, document.getElementById('cardBackError'), invalid);
+  if (invalid) return;
+  if (state.editingCardId) {
+    const card = deck.cards.find(c => c.id === state.editingCardId);
+    card.front = front; card.back = back;
+  } else {
+    deck.cards.push({ id: uid(), front, back, starred: false, schedule: null });
+  }
+  save(); cardModal.classList.remove('open'); renderAll();
+});
+
+// ==================== SETTINGS / THEMES ====================
+const ACCENTS = ['#cba6f7','#f5c2e7','#f38ba8','#fab387','#f9e2af','#a6e3a1','#94e2d5','#89b4fa'];
+const settingsModal = document.getElementById('settingsModal');
+let prefs = { theme: 'mocha', accent: '#cba6f7' };
+try {
+  const raw = localStorage.getItem('flash-prefs');
+  if (raw) prefs = { ...prefs, ...JSON.parse(raw) };
+} catch (e) {}
+const THEME_MAP = { dark: 'mocha', black: 'mocha', light: 'latte' };
+if (THEME_MAP[prefs.theme]) prefs.theme = THEME_MAP[prefs.theme];
+
+function applyPrefs() {
+  if (!ACCENTS.includes(prefs.accent)) prefs.accent = ACCENTS[0];
+  document.documentElement.dataset.theme = prefs.theme;
+  document.documentElement.style.setProperty('--accent', prefs.accent);
+  try {
+    localStorage.setItem('flash-prefs', JSON.stringify(prefs));
+  } catch (err) {
+    console.error(err);
+  }
+  document.querySelectorAll('#themeGroup .seg-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.theme === prefs.theme));
+  renderAccentPicker();
+}
+function renderAccentPicker() {
+  const picker = document.getElementById('accentPicker');
+  if (!picker) return;
+  picker.innerHTML = ACCENTS.map(c =>
+    `<button type="button" class="color-swatch ${c === prefs.accent ? 'selected' : ''}" data-accent="${c}" style="background:${c}" aria-pressed="${c === prefs.accent}" aria-label="Use accent color ${c}"></button>`).join('');
+}
+function refreshAISettings() {
+  const p = AI_PROVIDERS[aiCfg.provider];
+  document.getElementById('aiProvider').value = aiCfg.provider;
+  document.getElementById('aiKeyHelp').textContent = p.keyHelp;
+  document.getElementById('aiKeyLink').href = p.keyUrl;
+  const saved = aiCfg.models[aiCfg.provider] || '';
+  const modelInput = document.getElementById('aiModel');
+  const select = document.getElementById('aiModelSelect');
+  const known = p.models.includes(p.defaultModel) ? p.models : [p.defaultModel, ...p.models];
+  select.innerHTML = known.map(m => `<option value="${m}">${m}</option>`).join('')
+    + '<option value="__custom">Custom model…</option>';
+  if (saved && !known.includes(saved)) {
+    select.value = '__custom';
+    modelInput.style.display = '';
+    modelInput.value = saved;
+    modelInput.placeholder = 'e.g. provider/model-id';
+  } else {
+    select.value = saved || p.defaultModel;
+    modelInput.style.display = 'none';
+    modelInput.value = '';
+    modelInput.placeholder = p.defaultModel;
+  }
+  document.getElementById('aiKey').value = aiCfg.keys[aiCfg.provider] || '';
+  setStatus(document.getElementById('aiStatus'), '');
+}
+document.getElementById('aiProvider').addEventListener('change', e => {
+  aiCfg.provider = e.target.value; saveAI(); refreshAISettings();
+});
+document.getElementById('aiModelSelect').addEventListener('change', e => {
+  const input = document.getElementById('aiModel');
+  if (e.target.value === '__custom') {
+    input.style.display = '';
+    input.value = '';
+    aiCfg.models[aiCfg.provider] = '';
+    saveAI();
+    input.focus();
+  } else {
+    input.style.display = 'none';
+    input.value = '';
+    aiCfg.models[aiCfg.provider] = e.target.value;
+    saveAI();
+  }
+});
+document.getElementById('aiModel').addEventListener('input', e => {
+  aiCfg.models[aiCfg.provider] = e.target.value.trim(); saveAI();
+});
+document.getElementById('aiKey').addEventListener('input', e => {
+  aiCfg.keys[aiCfg.provider] = e.target.value.trim(); saveAI();
+  const status = document.getElementById('aiStatus');
+  status.textContent = ''; status.style.color = '';
+});
+document.getElementById('aiTestBtn').addEventListener('click', async () => {
+  const status = document.getElementById('aiStatus');
+  setStatus(status, 'Testing…');
+  try {
+    await AI.complete('Reply with exactly: OK');
+    setStatus(status, '✓ Connected', 'var(--green)');
+  } catch (err) {
+    setStatus(status, '✗ ' + err.message, 'var(--red)');
+  }
+});
+document.getElementById('settingsBtn').addEventListener('click', () => {
+  applyPrefs();
+  refreshAISettings();
+  openModal(settingsModal);
+});
+document.getElementById('themeGroup').addEventListener('click', e => {
+  const btn = e.target.closest('.seg-btn'); if (!btn) return;
+  prefs.theme = btn.dataset.theme;
+  applyPrefs();
+});
+document.getElementById('accentPicker').addEventListener('click', e => {
+  const sw = e.target.closest('.color-swatch'); if (!sw) return;
+  prefs.accent = sw.dataset.accent;
+  applyPrefs();
+});
+
+// ==================== LOCAL BACKUP ====================
+function downloadJSON(filename, data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function exportBackup() {
+  downloadJSON(`flipside-backup-${new Date().toISOString().slice(0, 10)}.json`, {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    decks: state.decks,
+    folders: state.folders,
+    studyHistory: state.studyHistory.slice(-200),
+    prefs: { theme: prefs.theme, accent: prefs.accent },
+  });
+  showToast('Backup downloaded');
+}
+
+function parseBackup(raw) {
+  const value = JSON.parse(raw);
+  const source = value && value.decks ? value : { decks: value, folders: [] };
+  const normalized = normalizeLibrary(source);
+  if (!Array.isArray(normalized.decks)) throw new Error('No decks found');
+  const prefsIn = value?.prefs || {};
+  return {
+    ...normalized,
+    studyHistory: normalizeStudyHistory(value?.studyHistory),
+    prefs: {
+      theme: ['latte', 'frappe', 'macchiato', 'mocha'].includes(prefsIn.theme) ? prefsIn.theme : prefs.theme,
+      accent: ACCENTS.includes(prefsIn.accent) ? prefsIn.accent : prefs.accent,
+    },
+  };
+}
+
+document.getElementById('exportBackupBtn').addEventListener('click', exportBackup);
+document.getElementById('importBackupBtn').addEventListener('click', () => document.getElementById('backupFile').click());
+document.getElementById('backupFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try {
+      const backup = parseBackup(String(reader.result));
+      const cardCount = backup.decks.reduce((sum, d) => sum + d.cards.length, 0);
+      const ok = confirm(`Replace your current ${state.decks.length} deck(s) with ${backup.decks.length} deck(s) and ${cardCount} card(s)? This cannot be undone.`);
+      if (!ok) return;
+      state.decks = backup.decks;
+      state.folders = backup.folders;
+      state.studyHistory = backup.studyHistory;
+      prefs = { ...prefs, ...backup.prefs };
+      state.activeDeckId = state.decks[0]?.id || null;
+      persistStudyHistory();
+      save();
+      applyPrefs();
+      renderAll();
+      showToast(`Restored ${backup.decks.length} deck${backup.decks.length === 1 ? '' : 's'}`);
+    } catch (err) {
+      showToast(`Backup import failed: ${err.message}`);
+    } finally {
+      e.target.value = '';
+    }
+  };
+  reader.readAsText(file);
+});
+
+// ==================== DECK ACTION MENU ====================
+const deckActionsModal = document.getElementById('deckActionsModal');
+let deckActionTarget = null;
+
+function openDeckActionsModal(deck) {
+  deckActionTarget = deck;
+  document.getElementById('deckActionsTitle').textContent = `“${deck.name}” actions`;
+  document.getElementById('deckActionsMenu').innerHTML = `
+    <button class="menu-item" role="menuitem" data-menu-action="export">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+      Export deck
+    </button>
+    <button class="menu-item" role="menuitem" data-menu-action="move">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      Move to folder
+    </button>
+    <button class="menu-item" role="menuitem" data-menu-action="edit">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
+      Edit deck
+    </button>
+    <button class="menu-item danger" role="menuitem" data-menu-action="delete">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+      Delete deck
+    </button>`;
+  openModal(deckActionsModal, document.querySelector('#deckActionsMenu .menu-item'));
+}
+
+document.getElementById('deckActionsMenu').addEventListener('click', e => {
+  const item = e.target.closest('[data-menu-action]');
+  if (!item || !deckActionTarget) return;
+  const action = item.dataset.menuAction;
+  const deck = deckActionTarget;
+  closeModal(deckActionsModal);
+  if (action === 'export') exportDeck(deck);
+  else if (action === 'move') openMoveModal(deck);
+  else if (action === 'edit') openDeckModal(deck);
+  else if (action === 'delete') {
+    if (confirm(`Delete "${deck.name}" and all its cards?`)) {
+      state.decks = state.decks.filter(d => d.id !== deck.id);
+      if (state.activeDeckId === deck.id) state.activeDeckId = state.decks[0]?.id || null;
+      save(); renderAll();
+    }
+  }
+});
+
+// ==================== MOVE TO FOLDER ====================
+const moveModal = document.getElementById('moveModal');
+let moveDeckTarget = null;
+
+function renderMoveOptions() {
+  const opts = [{ id: null, name: 'No folder' }, ...state.folders];
+  document.getElementById('moveOptions').innerHTML = opts.map(f => {
+    const active = (moveDeckTarget.folderId || null) === f.id;
+    return `<div class="menu-item" data-move-to="${f.id || ''}">${esc(f.name)}${active ? '<span style="margin-left:auto;color:var(--accent)">✓</span>' : ''}</div>`;
+  }).join('');
+}
+function openMoveModal(deck) {
+  moveDeckTarget = deck;
+  document.getElementById('moveDeckName').textContent = deck.name;
+  document.getElementById('newFolderName').value = '';
+  renderMoveOptions();
+  openModal(moveModal, document.getElementById('newFolderName'));
+}
+document.getElementById('moveOptions').addEventListener('click', e => {
+  const item = e.target.closest('[data-move-to]');
+  if (!item || !moveDeckTarget) return;
+  moveDeckTarget.folderId = item.dataset.moveTo || null;
+  save();
+  moveModal.classList.remove('open');
+  renderAll();
+});
+document.getElementById('newFolderName').addEventListener('input', e => setFieldError(e.target, document.getElementById('newFolderError'), false));
+document.getElementById('createFolderBtn').addEventListener('click', () => {
+  const nameInput = document.getElementById('newFolderName');
+  const name = nameInput.value.trim();
+  if (!name) { setFieldError(nameInput, document.getElementById('newFolderError'), true); nameInput.focus(); return; }
+  if (!moveDeckTarget) return;
+  const folder = { id: uid(), name: name.slice(0, 40) };
+  state.folders.push(folder);
+  moveDeckTarget.folderId = folder.id;
+  save();
+  moveModal.classList.remove('open');
+  renderAll();
+});
+
+// ==================== NEW DECK / FOLDERS ====================
+document.getElementById('newDeckBtn').addEventListener('click', () => openDeckModal());
+document.getElementById('newFolderBtn').addEventListener('click', e => {
+  e.stopPropagation();
+  const name = prompt('Folder name:');
+  if (name && name.trim()) {
+    state.folders.push({ id: uid(), name: name.trim().slice(0, 40) });
+    save(); renderSidebar();
+  }
+});
+
+// ==================== IMPORT// ==================== IMPORT (lives inside the card modal) ====================
+let importTargetDeck = null;
+let importSource = 'quizlet';
+
+function syncImportTabMode() {
+  const targeted = !!importTargetDeck;
+  document.getElementById('importNameField').style.display = targeted ? 'none' : '';
+  document.getElementById('importSaveBtn').textContent = targeted ? 'Add cards' : 'Import';
+}
+function showCardTab(tab) {
+  document.getElementById('manualTab').style.display = tab === 'manual' ? '' : 'none';
+  [...document.getElementById('cardModeTabs').children].forEach(b =>
+    b.classList.toggle('active', b.dataset.tab === tab));
+  if (tab === 'import') {
+    // hand off to the deck popup's import, targeted at this deck
+    const deck = activeDeck(); if (!deck) return;
+    closeModal(cardModal);
+    openDeckModal(null);
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    importTargetDeck = deck;
+    document.getElementById('deckModeTabs').style.display = 'none';
+    document.getElementById('deckModalTitle').textContent = `Add cards to “${deck.name}”`;
+    document.getElementById('deckCreateTab').style.display = 'none';
+    document.getElementById('deckImportTab').style.display = '';
+    syncImportTabMode();
+  }
+}
+document.getElementById('cardModeTabs').addEventListener('click', e => {
+  const btn = e.target.closest('.seg-btn'); if (!btn) return;
+  showCardTab(btn.dataset.tab);
+});
+
+const IMPORT_HINTS = {
+  quizlet: 'In Quizlet, open the deck → ⋯ (or Export) → copy the exported text and paste it below. Default separators: tab between term and definition, new line between cards.',
+  anki: 'In Anki, select the deck → File → Export → format “Text separated by tabs (.txt)” → export, then upload or paste the file here. Header lines starting with # are skipped.',
+  photo: 'Upload or paste a file and your AI provider will turn it into flashcards: images and PDFs are read with vision, plain text files (.txt / .md / .csv) as text. Add instructions to control how the cards are built. Requires an AI provider + API key in Settings.',
+};
+
+function updateImportSections() {
+  const isPhoto = importSource === 'photo';
+  document.getElementById('importPasteField').style.display = isPhoto ? 'none' : '';
+  document.getElementById('importSepFields').style.display = isPhoto ? 'none' : '';
+  document.getElementById('importPhotoSection').style.display = isPhoto ? '' : 'none';
+}
+
+function parseImportText(text, source, termSep, cardSep) {
+  const normalized = text.replace(/\r/g, '');
+  const rows = cardSep === 'semicolon' ? normalized.split(';') : normalized.split('\n');
+  const seps = { tab: '\t', comma: ',', dash: ' - ' };
+  const term = seps[termSep];
+  const cards = [];
+  for (let row of rows) {
+    row = row.trim();
+    if (!row || row.startsWith('#')) continue;
+    const idx = row.indexOf(term);
+    if (idx === -1) continue;
+    const front = row.slice(0, idx).trim();
+    const back = row.slice(idx + term.length).trim();
+    if (!front || !back) continue;
+    // strip HTML from Anki exports (e.g. <img>, <div>), collapse whitespace
+    const clean = s => s.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+/g, ' ').trim();
+    cards.push({ front: clean(front), back: clean(back) });
+  }
+  return cards;
+}
+
+function autoDetectTermSep(text) {
+  if (text.includes('\t')) return 'tab';
+  if (text.includes(' - ')) return 'dash';
+  return 'comma';
+}
+
+function updateImportPreview() {
+  const text = document.getElementById('importText').value;
+  const termSep = document.getElementById('importTermSep').value;
+  const cardSep = document.getElementById('importCardSep').value;
+  const cards = parseImportText(text, importSource, termSep, cardSep);
+  const preview = document.getElementById('importPreview');
+  if (!cards.length) {
+    preview.style.display = 'none';
+    syncImportButton(0);
+    return;
+  }
+  preview.style.display = '';
+  const sample = cards.slice(0, 3).map(c =>
+    `<div class="ip-row"><b>${esc(c.front)}</b> → ${esc(c.back)}</div>`).join('');
+  const more = cards.length > 3 ? `<div class="ip-row" style="color:var(--text-3)">…and ${cards.length - 3} more</div>` : '';
+  preview.innerHTML = `<div class="ip-count">${cards.length} card${cards.length === 1 ? '' : 's'} detected</div>${sample}${more}`;
+  syncImportButton(cards.length);
+}
+
+// button reflects whether a file still needs extracting
+let fileExtracted = false;
+function syncImportButton(previewCount) {
+  const btn = document.getElementById('importSaveBtn');
+  if (importAttachment && !fileExtracted) {
+    btn.disabled = false;
+    btn.textContent = importTargetDeck ? 'Extract & add cards' : 'Extract & import';
+  } else if (previewCount > 0) {
+    btn.disabled = false;
+    btn.textContent = importTargetDeck ? 'Add cards' : 'Import';
+  } else {
+    btn.disabled = true;
+    btn.textContent = importTargetDeck ? 'Add cards' : 'Import';
+  }
+}
+
+function setImportSource(source) {
+  importSource = source;
+  [...document.getElementById('importSource').children].forEach(b =>
+    b.classList.toggle('active', b.dataset.source === source));
+  document.getElementById('importHint').textContent = IMPORT_HINTS[source];
+  document.getElementById('importTermSep').value = 'tab';
+  document.getElementById('importCardSep').value = 'newline';
+  setImportFile(null);
+  updateImportSections();
+  updateImportPreview();
+}
+document.getElementById('importSource').addEventListener('click', e => {
+  const btn = e.target.closest('.seg-btn'); if (!btn) return;
+  setImportSource(btn.dataset.source);
+});
+document.getElementById('importText').addEventListener('input', () => {
+  const textEl = document.getElementById('importText');
+  const sepEl = document.getElementById('importTermSep');
+  if (textEl.value && !textEl.dataset.sepLocked) {
+    sepEl.value = autoDetectTermSep(textEl.value);
+    textEl.dataset.sepLocked = '1';
+  }
+  updateImportPreview();
+});
+document.getElementById('importTermSep').addEventListener('change', updateImportPreview);
+document.getElementById('importCardSep').addEventListener('change', updateImportPreview);
+
+function loadImportTextFile(file) {
+  if (!file) return;
+  if (/\.(apkg|colpkg|zip)$/i.test(file.name)) {
+    document.getElementById('importFileWarn').style.display = '';
+    return;
+  }
+  document.getElementById('importFileWarn').style.display = 'none';
+  const reader = new FileReader();
+  reader.onload = () => {
+    const textEl = document.getElementById('importText');
+    textEl.value = reader.result;
+    delete textEl.dataset.sepLocked;
+    if (!importTargetDeck && !document.getElementById('importName').value.trim()) {
+      document.getElementById('importName').value = file.name.replace(/\.(txt|csv|tsv|md)$/i, '').slice(0, 60);
+    }
+    document.getElementById('importTermSep').value = autoDetectTermSep(textEl.value);
+    updateImportPreview();
+  };
+  reader.readAsText(file);
+}
+document.getElementById('importFile').addEventListener('change', e => loadImportTextFile(e.target.files[0]));
+
+document.getElementById('importSaveBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('importSaveBtn');
+  if (importAttachment && !fileExtracted) {
+    btn.disabled = true;
+    btn.textContent = 'Extracting…';
+    const ok = await runFileExtraction();
+    if (!ok) { updateImportPreview(); return; }
+  }
+  const text = document.getElementById('importText').value;
+  const cards = parseImportText(text, importSource,
+    document.getElementById('importTermSep').value,
+    document.getElementById('importCardSep').value);
+  if (!cards.length) return;
+  if (importTargetDeck) {
+    const deck = importTargetDeck;
+    cards.forEach(c => deck.cards.push({ id: uid(), front: c.front, back: c.back, starred: false, schedule: null }));
+    state.activeDeckId = deck.id;
+    save();
+    importTargetDeck = null;
+    importAttachment = null;
+    fileExtracted = false;
+    closeModal(deckModal);
+    resetImportForm();
+    showToast(`Added ${cards.length} card${cards.length === 1 ? '' : 's'} to “${deck.name}”`);
+    showView('overview');
+    renderAll();
+    return;
+  }
+  const name = document.getElementById('importName').value.trim() || 'Imported deck';
+  const deck = {
+    id: uid(), name,
+    description: '',
+    color: COLORS[state.decks.length % COLORS.length],
+    cards: cards.map(c => ({ id: uid(), front: c.front, back: c.back, starred: false, schedule: null })),
+  };
+  state.decks.push(deck);
+  state.activeDeckId = deck.id;
+  save();
+  importTargetDeck = null;
+  importAttachment = null;
+  fileExtracted = false;
+  closeModal(deckModal);
+  resetImportForm();
+  showToast(`Imported ${cards.length} card${cards.length === 1 ? '' : 's'}`);
+  document.getElementById('importText').value = '';
+  document.getElementById('importName').value = '';
+  document.getElementById('importFile').value = '';
+  delete document.getElementById('importText').dataset.sepLocked;
+  document.getElementById('importFileWarn').style.display = 'none';
+  showView('overview');
+  renderAll();
+});
+
+// ---------- Photo (AI) import ----------
+let importAttachment = null;
+
+const TEXT_FILE_RE = /\.(txt|md|csv|tsv)$/i;
+
+function setImportFile(file, statusMsg) {
+  const status = document.getElementById('aiExtractStatus');
+  const thumb = document.getElementById('photoThumb');
+  const chip = document.getElementById('fileChip');
+  if (!file) {
+    resetPhotoImport();
+    return;
+  }
+  const name = file.name || 'Pasted content';
+  fileExtracted = false;
+  const textEl = document.getElementById('importText');
+  textEl.value = '';
+  delete textEl.dataset.sepLocked;
+  updateImportPreview();
+  const isImage = file.type.startsWith('image/');
+  const isPdf = file.type === 'application/pdf' || (/\.pdf$/i.test(name) && !file.type.startsWith('text/'));
+  const isText = file.type.startsWith('text/') || TEXT_FILE_RE.test(name);
+
+  if (isImage) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      importAttachment = { kind: 'image', mime: file.type, base64: reader.result.split(',')[1], name };
+      syncImportButton(0);
+      thumb.src = reader.result; thumb.style.display = ''; chip.style.display = 'none';
+      document.getElementById('photoThumbWrap').style.display = '';
+      if (statusMsg) { status.textContent = statusMsg; status.style.color = 'var(--green)'; }
+      else { status.textContent = ''; status.style.color = ''; }
+    };
+    reader.readAsDataURL(file);
+  } else if (isPdf) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      importAttachment = { kind: 'pdf', mime: 'application/pdf', base64: reader.result.split(',')[1], name };
+      syncImportButton(0);
+      thumb.style.display = 'none';
+      chip.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>' + esc(name) + ' \u00b7 PDF';
+      chip.style.display = 'flex';
+      document.getElementById('photoThumbWrap').style.display = '';
+      if (statusMsg) { status.textContent = statusMsg; status.style.color = 'var(--green)'; }
+      else { status.textContent = ''; status.style.color = ''; }
+    };
+    reader.readAsDataURL(file);
+  } else if (isText) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      importAttachment = { kind: 'text', text: reader.result, name };
+      syncImportButton(0);
+      thumb.style.display = 'none';
+      chip.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>' + esc(name) + ' \u00b7 text';
+      chip.style.display = 'flex';
+      document.getElementById('photoThumbWrap').style.display = '';
+      if (statusMsg) { status.textContent = statusMsg; status.style.color = 'var(--green)'; }
+      else { status.textContent = ''; status.style.color = ''; }
+    };
+    reader.readAsText(file);
+  } else {
+    resetPhotoImport();
+    status.textContent = 'Unsupported file type — use an image, PDF, or .txt / .md / .csv file.';
+    status.style.color = 'var(--amber)';
+  }
+}
+
+document.getElementById('importPhotoFile').addEventListener('change', e => setImportFile(e.target.files[0]));
+
+['importFile', 'importPhotoFile'].forEach(inputId => {
+  const input = document.getElementById(inputId);
+  const drop = input.closest('.import-drop');
+  ['dragenter', 'dragover'].forEach(type => drop.addEventListener(type, e => {
+    e.preventDefault();
+    drop.classList.add('dragover');
+  }));
+  ['dragleave', 'drop'].forEach(type => drop.addEventListener(type, () => drop.classList.remove('dragover')));
+  drop.addEventListener('drop', e => {
+    e.preventDefault();
+    const file = [...e.dataTransfer.files][0];
+    if (!file) return;
+    if (inputId === 'importFile') loadImportTextFile(file);
+    else setImportFile(file);
+  });
+});
+
+async function runFileExtraction() {
+  const status = document.getElementById('aiExtractStatus');
+  if (!importAttachment) {
+    status.textContent = 'Choose a file first.'; status.style.color = 'var(--amber)';
+    return false;
+  }
+  if (importAttachment.kind === 'pdf' && !(AI_PROVIDERS[aiCfg.provider].capabilities || {}).pdf) {
+    status.textContent = `PDF reading isn't supported by ${AI_PROVIDERS[aiCfg.provider].label} — use Gemini, Anthropic, or OpenAI, or convert the PDF to images.`;
+    status.style.color = 'var(--amber)';
+    return false;
+  }
+  if (!AI.isConfigured()) {
+    status.textContent = 'Add an AI provider and API key in Settings first.'; status.style.color = 'var(--amber)';
+    return false;
+  }
+  try {
+    const instructions = document.getElementById('importPhotoInstructions').value.trim();
+    const instructionText = instructions ? `Follow these instructions: ${instructions}` : 'Make one card per distinct fact, term, or question-answer pair you can find.';
+    const base = `Extract flashcards. ${instructionText} The "front" is the prompt or question, the "back" is the answer. Respond with ONLY a JSON array of objects like {"front": "...", "back": "..."} — no other text.`;
+    let cards;
+    if (importAttachment.kind === 'text') {
+      cards = parseJsonCards(await AI.complete(`${base}\n\nContent:\n\n${importAttachment.text}`));
+    } else {
+      const kindLabel = importAttachment.kind === 'pdf' ? 'this PDF document' : 'this image';
+      cards = parseJsonCards(await AI.completeVision(`Extract flashcards from ${kindLabel}. ${base}`, importAttachment));
+    }
+    const textEl = document.getElementById('importText');
+    textEl.value = cards.map(c => `${c.front.replace(/\t/g, ' ')}\t${c.back.replace(/\t/g, ' ')}`).join('\n');
+    delete textEl.dataset.sepLocked;
+    document.getElementById('importTermSep').value = 'tab';
+    fileExtracted = true;
+    updateImportPreview();
+    status.textContent = `✓ Generated ${cards.length} card${cards.length === 1 ? '' : 's'}`;
+    status.style.color = 'var(--green)';
+    return true;
+  } catch (err) {
+    status.textContent = '✗ ' + err.message; status.style.color = 'var(--red)';
+    return false;
+  }
+}
+
+document.getElementById('aiExtractBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('aiExtractBtn');
+  btn.disabled = true;
+  const originalLabel = btn.innerHTML;
+  btn.textContent = 'Extracting…';
+  await runFileExtraction();
+  btn.disabled = false;
+  btn.innerHTML = originalLabel;
+});
+
+// ---------- Clipboard paste support in the import dialog ----------
+document.addEventListener('paste', e => {
+  if (!deckModal.classList.contains('open')) return;
+  const items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type && item.type.startsWith('image/')) {
+      const file = item.getAsFile();
+      if (!file) return;
+      e.preventDefault();
+      if (importSource !== 'photo') setImportSource('photo');
+      setImportFile(file, '✓ Pasted from clipboard');
+      return;
+    }
+  }
+  // plain text: fill the paste box, or attach as a text file in File mode
+  const active = document.activeElement;
+  const inField = active && (active.tagName === 'TEXTAREA' || (active.tagName === 'INPUT' && active.type !== 'file'));
+  if (inField) return;
+  if (importSource === 'photo') {
+    const text = e.clipboardData.getData('text/plain');
+    if (text && text.trim()) {
+      e.preventDefault();
+      const pasted = new window.File([text], 'Pasted text.txt', { type: 'text/plain' });
+      setImportFile(pasted, '✓ Pasted text from clipboard');
+    }
+    return;
+  }
+  const text = e.clipboardData.getData('text/plain');
+  if (text && text.trim()) {
+    e.preventDefault();
+    const textEl = document.getElementById('importText');
+    textEl.value = text;
+    delete textEl.dataset.sepLocked;
+    document.getElementById('importTermSep').value = autoDetectTermSep(text);
+    updateImportPreview();
+  }
+});
+
+function resetPhotoImport() {
+  importAttachment = null;
+  fileExtracted = false;
+  document.getElementById('importPhotoFile').value = '';
+  document.getElementById('importPhotoInstructions').value = '';
+  document.getElementById('photoThumb').removeAttribute('src');
+  document.getElementById('fileChip').textContent = '';
+  document.getElementById('photoThumbWrap').style.display = 'none';
+  const status = document.getElementById('aiExtractStatus');
+  status.textContent = '';
+  status.style.color = '';
+}
+
+function resetImportForm() {
+  resetPhotoImport();
+  document.getElementById('importText').value = '';
+  document.getElementById('importName').value = '';
+  document.getElementById('importFile').value = '';
+  delete document.getElementById('importText').dataset.sepLocked;
+  document.getElementById('importFileWarn').style.display = 'none';
+  updateImportPreview();
+}
+
+// ==================== MISC ====================
+document.querySelectorAll('[data-close]').forEach(btn =>
+  btn.addEventListener('click', () => closeModal(document.getElementById(btn.dataset.close))));
+document.querySelectorAll('.modal-overlay').forEach(ov =>
+  ov.addEventListener('click', e => { if (e.target === ov) closeModal(ov); }));
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const openModals = document.querySelectorAll('.modal-overlay.open');
+    if (openModals.length) {
+      e.stopImmediatePropagation(); // close the modal without also leaving study mode
+      openModals.forEach(closeModal);
+    }
+  }
+});
+
+// ---------- Keyboard support in study mode ----------
+document.addEventListener('keydown', e => {
+  if (e.repeat) return;
+  const studyActive = document.getElementById('studyView').classList.contains('active');
+  if (!studyActive) return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+  if (e.key === 'Escape') {
+    const back = document.getElementById('exitStudy') || document.getElementById('summaryBack');
+    if (back) back.click();
+    return;
+  }
+  if (!session || session.index >= session.cards.length) return;
+
+  if (session.mode === 'flashcards') {
+    const fc = document.getElementById('flashcard');
+    if (!fc) return;
+    const flipped = fc.classList.contains('flipped');
+    if (e.code === 'Space' || e.key === ' ') {
+      e.preventDefault();
+      if (!flipped) fc.click();
+      else (document.querySelector('.ans-btn[data-rating="3"]') || document.querySelector('.ans-btn.good')).click();
+    } else if (flipped && session.deck.fsrs && ['1','2','3','4'].includes(e.key)) {
+      document.querySelector(`.ans-btn[data-rating="${e.key}"]`)?.click();
+    } else if (flipped && !session.deck.fsrs && e.key === '1') {
+      document.querySelector('.ans-btn.again').click();
+    } else if (flipped && !session.deck.fsrs && e.key === '2') {
+      document.querySelector('.ans-btn.good').click();
+    }
+  } else if (session.mode === 'quiz' && ['1', '2', '3', '4'].includes(e.key)) {
+    const choices = [...document.querySelectorAll('.quiz-choice:not(:disabled)')];
+    const choice = choices[parseInt(e.key) - 1];
+    if (choice) { e.preventDefault(); choice.click(); }
+  }
+});
+
+document.getElementById('emptyCreateBtn').addEventListener('click', () => openDeckModal());
+document.getElementById('emptyImportBtn').addEventListener('click', () => {
+  openDeckModal(null);
+  showDeckTab('import');
+});
+
+function renderAll() {
+  renderSidebar();
+  renderHome();
+  renderOverview();
+}
+if (!state.decks.some(d => d.id === state.activeDeckId)) state.activeDeckId = state.decks[0]?.id || null;
+applyPrefs();
+showView('home');
+renderAll();
+</script>
+</body>
+</html>
