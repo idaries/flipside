@@ -392,6 +392,93 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
 .home-nav svg { width: 16px; height: 16px; margin-left: 7px; flex-shrink: 0; }
 .home-nav:hover { background: rgba(255, 235, 210, .04); color: var(--text); }
 .home-nav.active { background: var(--surface-3); color: var(--accent); }
+/* ============ NOTES ============ */
+.note-workspace { max-width: 1180px; margin: 0 auto; padding: 22px 24px 34px; display: flex; flex-direction: column; height: 100%; min-height: 100vh; }
+.note-workspace .study-topbar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; margin-bottom: 16px; gap: 10px; }
+#noteTitleInput {
+  border: 0; background: transparent; color: var(--text); font: inherit; font-size: 23px;
+  font-weight: 750; letter-spacing: -0.025em; padding: 3px 8px; border-radius: 8px; min-width: 0;
+}
+#noteTitleInput:hover, #noteTitleInput:focus { background: var(--surface-2); outline: none; }
+#noteTitleInput:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 2px; }
+.note-toolbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;
+}
+.note-toolbar .seg-group { white-space: nowrap; flex: none; }
+.note-toolbar-note { color: var(--text-3); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.format-toolbar {
+  display: flex; align-items: center; gap: 4px; overflow-x: auto; padding: 6px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px;
+  scrollbar-width: none;
+}
+.format-toolbar::-webkit-scrollbar { display: none; }
+.format-toolbar button {
+  border: 0; background: transparent; color: var(--text-2); cursor: pointer; padding: 6px 9px;
+  border-radius: 7px; font: inherit; font-size: 13px; display: grid; place-items: center;
+  white-space: nowrap; min-width: 30px; min-height: 28px;
+}
+.format-toolbar button:hover { background: var(--surface-2); color: var(--text); }
+.format-toolbar .tb-b { font-weight: 800; }
+.format-toolbar .tb-i { font-style: italic; }
+.format-toolbar .tb-s { text-decoration: line-through; }
+.format-toolbar .tb-code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+.format-toolbar .sep { width: 1px; height: 22px; background: var(--border-2); margin: 0 4px; flex: none; }
+.format-toolbar.hidden { display: none; }
+.note-editor-wrap { flex: 1; min-height: 0; display: flex; }
+.note-editor-wrap .markdown-preview {
+  flex: 1; min-height: 0; overflow-y: auto; padding: 24px; border-radius: var(--radius-lg);
+  background: var(--surface); border: 1px solid var(--border); color: var(--text); line-height: 1.65;
+}
+#noteEditorRich:focus { outline: none; border-color: var(--border-2); box-shadow: 0 0 0 1px var(--border-2); }
+#noteEditorRich > :first-child { margin-top: 0; }
+#noteEditorRich > :last-child { margin-bottom: 0; }
+#noteEditorRich h1, #noteEditorRich h2, #noteEditorRich h3,
+#noteEditorRich h4, #noteEditorRich h5, #noteEditorRich h6 {
+  line-height: 1.25; letter-spacing: -0.02em; margin: 1.35em 0 .65em; color: var(--text);
+}
+#noteEditorRich h1 { font-size: 1.75rem; }
+#noteEditorRich h2 { font-size: 1.42rem; }
+#noteEditorRich h3 { font-size: 1.2rem; }
+#noteEditorRich h4 { font-size: 1.05rem; }
+#noteEditorRich h5, #noteEditorRich h6 { font-size: .95rem; color: var(--text-2); }
+#noteEditorRich p, #noteEditorRich ul, #noteEditorRich ol,
+#noteEditorRich blockquote, #noteEditorRich pre, #noteEditorRich table { margin: .8em 0; }
+#noteEditorRich ul, #noteEditorRich ol { padding-left: 1.35em; }
+#noteEditorRich li { margin: .3em 0; }
+#noteEditorRich a { color: var(--accent-deep); }
+#noteEditorRich strong { color: var(--text); font-weight: 750; }
+#noteEditorRich blockquote {
+  border-left: 3px solid var(--accent); padding: .2em 1em; color: var(--text-2); background: rgba(255,255,255,.02);
+}
+#noteEditorRich blockquote p { margin: .3em 0; }
+#noteEditorRich code {
+  background: var(--surface-2); border: 1px solid var(--border-2); border-radius: 5px;
+  font: 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; padding: .12em .34em;
+}
+#noteEditorRich pre {
+  background: #11111b; border: 1px solid var(--border-2); border-radius: 10px; overflow: auto; padding: 15px;
+}
+#noteEditorRich pre code { background: transparent; border: 0; padding: 0; font-size: 12.5px; color: var(--text); }
+#noteEditorRich table { width: 100%; border-collapse: collapse; font-size: 13px; display: block; overflow-x: auto; }
+#noteEditorRich th, #noteEditorRich td { border: 1px solid var(--border-2); padding: 7px 10px; text-align: left; }
+#noteEditorRich th { background: var(--surface-2); font-weight: 700; }
+#noteEditorRich hr { border: 0; border-top: 1px solid var(--border-2); margin: 1.6em 0; }
+#noteEditorRich img { max-width: 100%; border-radius: 9px; }
+#noteEditor {
+  display: none; width: 100%; flex: 1; min-height: 0; resize: none; padding: 20px; border-radius: var(--radius-lg);
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  font: 14px/1.65 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+#noteEditor:focus { outline: none; border-color: var(--border-2); }
+.note-editor-wrap.markdown-mode #noteEditorRich { display: none; }
+.note-editor-wrap.markdown-mode #noteEditor { display: block; }
+@media (max-width: 640px) {
+  .note-workspace { padding: 20px 16px 40px; }
+  .note-workspace .study-topbar { grid-template-columns: 1fr; }
+  #noteTitleInput { order: -1; }
+  .note-toolbar { align-items: stretch; flex-direction: column; }
+  #noteEditor { padding: 16px; font-size: 13px; }
+}
 @media (max-width: 640px) {
   .home-wrap { padding: 24px 20px 60px; }
   .home-stats { grid-template-columns: 1fr; }
@@ -606,16 +693,17 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
         <span class="sidebar-label">Home</span>
       </button>
       <div class="section-label sidebar-label section-label-row">
-        <span>Decks</span>
+        <span>Library</span>
         <button id="newFolderBtn" title="New folder" style="background:none;border:none;color:var(--text-3);cursor:pointer;display:flex;align-items:center;padding:2px;border-radius:4px">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14h6"/></svg>
         </button>
       </div>
       <div id="deckList"></div>
+      <div id="noteList" style="margin-top:2px"></div>
     </div>
-    <button class="new-deck-btn" id="newDeckBtn">
+    <button class="new-deck-btn" id="newLibraryItemBtn">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-      <span>New Deck</span>
+      <span>New</span>
     </button>
   </aside>
 
@@ -682,6 +770,56 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
           </div>
           <div id="cardsList"></div>
         </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="notesView">
+      <div class="note-workspace">
+        <div class="study-topbar">
+          <button class="btn-ghost" id="backToOverview">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back
+          </button>
+          <input id="noteTitleInput" aria-label="Note title" maxlength="80">
+          <div style="display:flex;align-items:center;gap:6px">
+            <button class="btn-ghost" id="deleteActiveNoteBtn" title="Delete note" aria-label="Delete note">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+              Delete
+            </button>
+            <button class="btn-primary" id="studyNoteBtn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l4 4-9 9H4v-4z"/></svg>
+              <span id="studyNoteBtnLabel">Study with AI</span>
+            </button>
+          </div>
+        </div>
+        <div class="note-toolbar">
+          <div class="seg-group" role="group" aria-label="Editor view">
+            <button class="seg-btn active" data-note-mode="formatted">Formatted</button>
+            <button class="seg-btn" data-note-mode="markdown">Markdown</button>
+          </div>
+          <div class="note-toolbar-note">Formatted editing · Markdown saved automatically</div>
+        </div>
+        <div class="format-toolbar" id="noteFormatToolbar" role="toolbar" aria-label="Markdown formatting">
+          <button type="button" data-note-format="h1" title="Heading 1">H1</button>
+          <button type="button" data-note-format="h2" title="Heading 2">H2</button>
+          <span class="sep" aria-hidden="true"></span>
+          <button type="button" class="tb-b" data-note-format="bold" title="Bold (⌘B / Ctrl+B)">B</button>
+          <button type="button" class="tb-i" data-note-format="italic" title="Italic (⌘I / Ctrl+I)">I</button>
+          <button type="button" class="tb-s" data-note-format="strikethrough" title="Strikethrough">S</button>
+          <button type="button" class="tb-code" data-note-format="code" title="Inline code">&lt;&gt;</button>
+          <button type="button" data-note-format="link" title="Link">Link</button>
+          <span class="sep" aria-hidden="true"></span>
+          <button type="button" data-note-format="bullet" title="Bullet list">•</button>
+          <button type="button" data-note-format="ordered" title="Numbered list">1.</button>
+          <button type="button" data-note-format="quote" title="Blockquote">❝</button>
+          <button type="button" data-note-format="code-block" title="Code block">Code</button>
+          <button type="button" data-note-format="table" title="Insert table">Table</button>
+          <button type="button" data-note-format="rule" title="Horizontal rule">—</button>
+        </div>
+        <div class="note-editor-wrap formatted" id="notePanes" data-mode="formatted">
+          <div id="noteEditorRich" class="markdown-preview rich-editor" contenteditable="true" spellcheck="true" aria-label="Formatted note"></div>
+          <textarea id="noteEditor" spellcheck="true" aria-label="Markdown source"></textarea>
         </div>
       </div>
     </div>
@@ -788,6 +926,62 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
   </div>
 </div>
 
+<div class="modal-overlay" id="noteStudyModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="noteStudyTitle" style="width:min(500px, calc(100vw - 40px))">
+    <h2 id="noteStudyTitle">Study note</h2>
+    <div class="opt-row-sub" style="margin-bottom:16px">AI turns your saved note into study material. Regenerate any time for fresh questions.</div>
+    <div class="mode-cards">
+      <button class="mode-card" data-note-study-mode="flashcards">
+        <span class="mode-card-name">Flashcards</span>
+        <span class="mode-card-sub">Self-paced recall prompts</span>
+      </button>
+      <button class="mode-card" data-note-study-mode="quiz">
+        <span class="mode-card-name">Multiple choice</span>
+        <span class="mode-card-sub">Answer AI-written questions</span>
+      </button>
+      <button class="mode-card" data-note-study-mode="both">
+        <span class="mode-card-name">Both</span>
+        <span class="mode-card-sub">Mix cards and questions</span>
+      </button>
+    </div>
+    <div class="opt-row">
+      <div class="opt-row-text">
+        <div class="opt-row-label">Items</div>
+        <div class="opt-row-sub">AI-generated questions and cards</div>
+      </div>
+      <select id="noteStudyCount" class="count-select">
+        <option value="5">5 items</option>
+        <option value="10" selected>10 items</option>
+        <option value="15">15 items</option>
+        <option value="20">20 items</option>
+      </select>
+    </div>
+    <div id="noteStudyStatus" role="status" aria-live="polite"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" data-close="noteStudyModal">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="newLibraryItemModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="newLibraryItemTitle" style="width:min(340px, calc(100vw - 40px))">
+    <h2 id="newLibraryItemTitle" style="margin-bottom:14px">New library item</h2>
+    <div role="menu" aria-label="Create a deck or note">
+      <button class="menu-item" role="menuitem" data-new-library-item="deck">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="14" height="14" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v11"/></svg>
+        New deck
+      </button>
+      <button class="menu-item" role="menuitem" data-new-library-item="note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        New markdown note
+      </button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" data-close="newLibraryItemModal">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="deckActionsModal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="deckActionsTitle" style="width:min(340px, calc(100vw - 40px))">
     <h2 id="deckActionsTitle" style="margin-bottom:14px">Deck actions</h2>
@@ -869,7 +1063,7 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
         <button class="btn-secondary" id="importBackupBtn">Import backup</button>
         <input type="file" id="backupFile" accept=".json,application/json" hidden>
       </div>
-      <div class="opt-row-sub" style="margin-top:8px">Back up or restore decks, folders, and preferences. API keys are never included.</div>
+      <div class="opt-row-sub" style="margin-top:8px">Back up or restore decks, folders, notes, and preferences. API keys are never included.</div>
     </div>
     <div style="display:flex;gap:10px;align-items:center;justify-content:space-between">
       <span id="aiStatus" role="status" aria-live="polite" style="font-size:12px;color:var(--text-3)"></span>
@@ -1022,12 +1216,31 @@ const COLORS = ['#cba6f7','#f5c2e7','#a6e3a1','#f9e2af','#89b4fa','#f38ba8','#94
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 const safeColor = c => COLORS.includes(c) ? c : COLORS[0];
 
+function normalizeNotes(value) {
+  const source = Array.isArray(value) ? value : [];
+  const usedIds = new Set();
+  return source.filter(Boolean).map((n, index) => {
+    let id = typeof n.id === 'string' && n.id.trim() ? n.id.trim() : '';
+    if (!id || usedIds.has(id)) id = `note-${index}-${uid()}`;
+    usedIds.add(id);
+    const now = Date.now();
+    return {
+      id,
+      title: typeof n.title === 'string' && n.title.trim() ? n.title.trim().slice(0, 80) : 'Untitled note',
+      content: typeof n.content === 'string' ? n.content.slice(0, 400000) : '',
+      createdAt: Number(n.createdAt) || now,
+      updatedAt: Number(n.updatedAt) || Number(n.createdAt) || now,
+    };
+  });
+}
+
 function normalizeLibrary(parsed) {
-  let decks, folders;
-  if (Array.isArray(parsed)) { decks = parsed; folders = []; } // pre-folder format
+  let decks, folders, notes;
+  if (Array.isArray(parsed)) { decks = parsed; folders = []; notes = []; } // pre-folder format
   else {
     decks = Array.isArray(parsed.decks) ? parsed.decks : [];
     folders = Array.isArray(parsed.folders) ? parsed.folders : [];
+    notes = normalizeNotes(parsed.notes);
   }
   const usedDeckIds = new Set(), usedFolderIds = new Set();
   decks = decks.filter(Boolean).map((d, di) => {
@@ -1058,7 +1271,7 @@ function normalizeLibrary(parsed) {
   });
   const folderIds = new Set(folders.map(f => f.id));
   decks.forEach(d => { if (d.folderId && !folderIds.has(d.folderId)) d.folderId = null; });
-  return { decks, folders };
+  return { decks, folders, notes };
 }
 
 function load() {
@@ -1066,7 +1279,7 @@ function load() {
     const raw = localStorage.getItem('flash-decks-v2');
     if (raw) return normalizeLibrary(JSON.parse(raw));
   } catch (e) {}
-  return { decks: [], folders: [] };
+  return { decks: [], folders: [], notes: [] };
 }
 
 const savedData = load();
@@ -1170,11 +1383,13 @@ function saveStudySession() {
 let state = {
   decks: savedData.decks,
   folders: savedData.folders,
+  notes: savedData.notes,
   activeDeckId: savedActiveDeckId,
   selectedColor: COLORS[0],
   editingDeckId: null,
   editingCardId: null,
   collapsedFolders: [],
+  activeNoteId: null,
   options: loadOptions(),
   collapsedFolders: loadCollapsedFolders(),
   studyHistory: loadStudyHistory(),
@@ -1183,7 +1398,7 @@ let session = null;
 
 function save() {
   try {
-    localStorage.setItem('flash-decks-v2', JSON.stringify({ folders: state.folders, decks: state.decks }));
+    localStorage.setItem('flash-decks-v2', JSON.stringify({ folders: state.folders, decks: state.decks, notes: state.notes }));
     localStorage.setItem('flash-active-deck', state.activeDeckId || '');
   } catch (err) {
     console.error(err);
@@ -1345,6 +1560,7 @@ function renderSidebar() {
     state.decks.filter(d => deckBelongsToFolder(d, folder.id)).forEach(deck => wrap.appendChild(buildDeckItem(deck)));
     list.appendChild(wrap);
   });
+  renderSidebarNotes();
 }
 
 // ==================== FOLDER ACTIONS ====================
@@ -2336,6 +2552,7 @@ document.getElementById('startStudyBtn').addEventListener('click', () => {
 function showView(name) {
   document.getElementById('homeView').classList.toggle('active', name === 'home');
   document.getElementById('overviewView').classList.toggle('active', name === 'overview');
+  document.getElementById('notesView').classList.toggle('active', name === 'notes');
   document.getElementById('studyView').classList.toggle('active', name === 'study');
   const homeNav = document.getElementById('homeNav');
   homeNav.classList.toggle('active', name === 'home');
@@ -2346,6 +2563,7 @@ function showView(name) {
 
 document.getElementById('homeNav').addEventListener('click', () => {
   endActiveSession();
+  endActiveNoteSession();
   if (isMobileViewport.matches) setMobileSidebar(false);
   showView('home');
   renderHome();
@@ -2540,7 +2758,6 @@ function renderSummary() {
 
 // ==================== DECK MODAL ====================
 const deckModal = document.getElementById('deckModal');
-document.getElementById('newDeckBtn').addEventListener('click', () => openDeckModal());
 function openDeckModal(deck) {
   state.editingDeckId = deck?.id || null;
   document.getElementById('deckModeTabs').style.display = deck ? 'none' : '';
@@ -2776,6 +2993,7 @@ function exportBackup() {
     exportedAt: new Date().toISOString(),
     decks: state.decks,
     folders: state.folders,
+    notes: state.notes,
     studyHistory: state.studyHistory.slice(-200),
     prefs: { theme: prefs.theme, accent: prefs.accent },
   });
@@ -2812,6 +3030,8 @@ document.getElementById('backupFile').addEventListener('change', e => {
       if (!ok) return;
       state.decks = backup.decks;
       state.folders = backup.folders;
+      state.notes = backup.notes || [];
+      state.activeNoteId = state.notes[0]?.id || null;
       state.studyHistory = backup.studyHistory;
       prefs = { ...prefs, ...backup.prefs };
       state.activeDeckId = state.decks[0]?.id || null;
@@ -2915,7 +3135,6 @@ document.getElementById('createFolderBtn').addEventListener('click', () => {
 });
 
 // ==================== NEW DECK / FOLDERS ====================
-document.getElementById('newDeckBtn').addEventListener('click', () => openDeckModal());
 document.getElementById('newFolderBtn').addEventListener('click', e => {
   e.stopPropagation();
   const name = prompt('Folder name:');
@@ -3368,6 +3587,607 @@ function resetImportForm() {
   updateImportPreview();
 }
 
+// ==================== NOTES ====================
+let noteSession = null;
+let noteSaveTimer = null;
+
+function activeNote() { return state.notes.find(n => n.id === state.activeNoteId); }
+function noteDisplayName(note) { return note.title || 'Untitled note'; }
+
+function buildNoteItem(note) {
+  const div = document.createElement('div');
+  div.className = 'deck-item' + (note.id === state.activeNoteId ? ' active' : '');
+  div.innerHTML = `
+    <button class="deck-select" ${note.id === state.activeNoteId ? 'aria-current="true"' : ''} aria-label="${esc(noteDisplayName(note))}">
+      <div class="deck-dot" style="background:var(--surface-3);color:var(--accent)">N</div>
+      <div class="deck-info">
+        <div class="deck-name">${esc(noteDisplayName(note))}</div>
+        <div class="deck-count">Note · ${new Date(note.updatedAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}</div>
+      </div>
+    </button>
+    <div class="deck-actions">
+      <button class="icon-btn-sm" data-study-note="${note.id}" title="Study with AI" aria-label="Study ${esc(noteDisplayName(note))} with AI">
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l4 4-9 9H4v-4z"/></svg>
+      </button>
+    </div>`;
+  div.addEventListener('click', e => {
+    const studyBtn = e.target.closest('[data-study-note]');
+    if (studyBtn) { e.stopPropagation(); openNote(note.id); openNoteStudyModal(); return; }
+    endActiveSession();
+    endActiveNoteSession();
+    openNote(note.id);
+  });
+  return div;
+}
+
+function renderSidebarNotes() {
+  const list = document.getElementById('noteList');
+  list.innerHTML = '';
+  [...state.notes].sort((a, b) => b.updatedAt - a.updatedAt)
+    .forEach(note => list.appendChild(buildNoteItem(note)));
+}
+
+let noteViewMode = 'formatted';
+
+function noteWrap() { return document.getElementById('notePanes'); }
+function richNoteEditor() { return document.getElementById('noteEditorRich'); }
+function rawNoteEditor() { return document.getElementById('noteEditor'); }
+
+function htmlToMarkdown(node) {
+  if (!node) return '';
+  if (node.nodeType === Node.TEXT_NODE) return node.nodeValue;
+  if (node.nodeType !== Node.ELEMENT_NODE) return '';
+
+  const tag = node.tagName.toLowerCase();
+  const child = () => Array.from(node.childNodes).map(htmlToMarkdown).join('');
+  if (tag === 'br') return '\n';
+  if (tag === 'img') {
+    const src = node.getAttribute('src') || '';
+    const alt = node.getAttribute('alt') || '';
+    return src ? `![${alt}](${src})` : '';
+  }
+  if (tag === 'strong' || tag === 'b') return `**${child().trim()}**`;
+  if (tag === 'em' || tag === 'i') return `*${child().trim()}*`;
+  if (tag === 'del' || tag === 's') return `~~${child().trim()}~~`;
+  if (tag === 'code') {
+    return node.parentElement?.tagName === 'PRE' ? child() : `\`${child().trim()}\``;
+  }
+  if (tag === 'a') return `[${child().trim()}](${node.getAttribute('href') || ''})`;
+  if (/^h[1-6]$/.test(tag)) return `${'#'.repeat(Number(tag.slice(1)))} ${child().trim()}`;
+  if (tag === 'blockquote') {
+    return child().trim().split('\n').map(line => line ? `> ${line}` : '>').join('\n');
+  }
+  if (tag === 'pre') {
+    return `\n\`\`\`${node.textContent.trimEnd()}\n\`\`\`\n`;
+  }
+  if (tag === 'ul' || tag === 'ol') {
+    const marker = tag === 'ol' ? '1.' : '-';
+    return Array.from(node.children).filter(el => el.tagName.toLowerCase() === 'li')
+      .map((li, index) => `${tag === 'ol' ? `${index + 1}.` : marker} ${htmlToMarkdown(li).trim()}`)
+      .join('\n');
+  }
+  if (tag === 'table') {
+    const rows = Array.from(node.rows || []).map(row =>
+      Array.from(row.cells).map(cell => htmlToMarkdown(cell).replace(/\n+/g, ' ').trim()).join('|')
+    );
+    if (!rows.length) return '';
+    return [rows[0], rows[0].replace(/[^|]/g, '-'), ...rows.slice(1)].join('\n');
+  }
+  if (tag === 'hr') return '\n---\n';
+  if (tag === 'p' || tag === 'div') return `\n${child().trim()}\n`;
+  return child();
+}
+
+function getNoteEditorValue(mode = noteViewMode) {
+  if (mode === 'markdown') return rawNoteEditor().value.slice(0, 400000);
+  const editor = richNoteEditor();
+  const markdown = htmlToMarkdown(editor).replace(/\n{3,}/g, '\n\n').trim();
+  return markdown.slice(0, 400000);
+}
+
+function renderNoteView() {
+  const note = activeNote();
+  const title = document.getElementById('noteTitleInput');
+  title.value = note ? noteDisplayName(note) : '';
+  if (noteViewMode === 'markdown') {
+    rawNoteEditor().value = note ? note.content : '';
+  } else {
+    richNoteEditor().innerHTML = note ? renderMarkdown(note.content || '') : '';
+  }
+  document.getElementById('deleteActiveNoteBtn').style.display = note ? '' : 'none';
+  const studyBtn = document.getElementById('studyNoteBtn');
+  const canStudy = !!note?.content.trim();
+  document.getElementById('studyNoteBtnLabel').textContent = canStudy ? 'Study with AI' : 'Add text to study';
+  studyBtn.title = canStudy ? 'Create AI flashcards and questions' : 'Write some note text first';
+  studyBtn.setAttribute('aria-label', studyBtn.title);
+}
+
+function setNoteViewMode(mode) {
+  const previousMode = noteViewMode;
+  const nextMode = mode === 'markdown' ? 'markdown' : 'formatted';
+  const note = activeNote();
+  if (note && previousMode !== nextMode) note.content = getNoteEditorValue(previousMode);
+  noteViewMode = nextMode;
+  noteWrap().classList.toggle('markdown-mode', noteViewMode === 'markdown');
+  noteWrap().dataset.mode = noteViewMode;
+  document.getElementById('noteFormatToolbar').classList.toggle('hidden', noteViewMode === 'markdown');
+  document.querySelectorAll('[data-note-mode]').forEach(button =>
+    button.classList.toggle('active', button.dataset.noteMode === noteViewMode));
+  renderNoteView();
+  if (note) save();
+  renderSidebarNotes();
+}
+
+function openNote(id) {
+  state.activeNoteId = state.notes.some(n => n.id === id) ? id : state.notes[0]?.id || null;
+  save();
+  showView('notes');
+  noteViewMode = 'formatted';
+  noteWrap().classList.remove('markdown-mode');
+  noteWrap().dataset.mode = 'formatted';
+  document.getElementById('noteFormatToolbar').classList.remove('hidden');
+  document.querySelectorAll('[data-note-mode]').forEach(button =>
+    button.classList.toggle('active', button.dataset.noteMode === 'formatted'));
+  renderNoteView();
+  renderSidebarNotes();
+  renderHome();
+}
+
+function createNote() {
+  const note = { id: uid(), title: 'Untitled note', content: '', createdAt: Date.now(), updatedAt: Date.now() };
+  state.notes.unshift(note);
+  openNote(note.id);
+}
+
+function deleteNote(id) {
+  const note = state.notes.find(n => n.id === id);
+  if (!note) return;
+  if (!confirm(`Delete "${noteDisplayName(note)}"? This cannot be undone.`)) return;
+  state.notes = state.notes.filter(n => n.id !== id);
+  state.activeNoteId = state.activeNoteId === id ? state.notes[0]?.id || null : state.activeNoteId;
+  save();
+  if (document.getElementById('notesView').classList.contains('active')) renderNoteView();
+  renderAllSidebarOnly();
+}
+
+function executeNoteCommand(command, value = null) {
+  richNoteEditor().focus();
+  document.execCommand(command, false, value);
+  saveCurrentNote();
+  renderSidebarNotes();
+}
+
+function toggleNoteBlock(tag) {
+  const current = String(document.queryCommandValue('formatBlock') || '').toLowerCase().replace(/[<>]/g, '');
+  executeNoteCommand('formatBlock', current === tag ? 'p' : tag);
+}
+
+function insertNoteLink() {
+  const selection = window.getSelection();
+  const selected = selection?.toString() || '';
+  const url = /^https?:\/\/\S+$/i.test(selected.trim()) ? selected.trim() : prompt('Link URL:', 'https://');
+  if (url) executeNoteCommand('createLink', url);
+}
+
+function insertNoteTable() {
+  executeNoteCommand('insertHTML', '<table><tbody><tr><th>Column 1</th><th>Column 2</th></tr><tr><td>Item</td><td>Item</td></tr></tbody></table>');
+}
+
+function applyNoteFormat(type) {
+  if (noteViewMode !== 'formatted' || !activeNote()) return;
+  switch (type) {
+    case 'h1': toggleNoteBlock('h1'); break;
+    case 'h2': toggleNoteBlock('h2'); break;
+    case 'bold': executeNoteCommand('bold'); break;
+    case 'italic': executeNoteCommand('italic'); break;
+    case 'strikethrough': executeNoteCommand('strikeThrough'); break;
+    case 'code': {
+      const selected = window.getSelection()?.toString() || 'code';
+      executeNoteCommand('insertHTML', `<code>${esc(selected)}</code>`);
+      break;
+    }
+    case 'link': insertNoteLink(); break;
+    case 'bullet': executeNoteCommand('insertUnorderedList'); break;
+    case 'ordered': executeNoteCommand('insertOrderedList'); break;
+    case 'quote': toggleNoteBlock('blockquote'); break;
+    case 'code-block': toggleNoteBlock('pre'); break;
+    case 'table': insertNoteTable(); break;
+    case 'rule': executeNoteCommand('insertHorizontalRule'); break;
+  }
+}
+
+function saveCurrentNote() {
+  const note = activeNote();
+  if (!note) return;
+  const titleInput = document.getElementById('noteTitleInput');
+  note.title = (titleInput.value || 'Untitled note').trim().slice(0, 80) || 'Untitled note';
+  note.content = getNoteEditorValue();
+  note.updatedAt = Date.now();
+  save();
+  renderSidebarNotes();
+}
+
+// Safe, dependency-free Markdown. Source text is escaped; only known URL schemes and
+// a limited set of inline/block constructs are turned into markup.
+function markdownURL(url) {
+  const value = String(url || '').trim();
+  if (/^(https?:|mailto:|data:image\/(?:png|jpeg|gif|webp);)/i.test(value)) return value;
+  if (/^(\/|\.\/|\.\.\/)/.test(value) || /^#/.test(value)) return value;
+  return '';
+}
+function inlineMarkdown(raw) {
+  const codeTokens = [];
+  let text = String(raw ?? '').replace(/(`+)([\s\S]*?)\1/g, (match, ticks, code) => {
+    const token = `\u0000${codeTokens.length}\u0000`;
+    codeTokens.push(`<code>${esc(code.replace(/^ $/, ''))}</code>`);
+    return token;
+  });
+  text = esc(text);
+  text = text.replace(/\u0000(\d+)\u0000/g, (m, i) => codeTokens[Number(i)] || '');
+  text = text.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+&quot;([^&]*)&quot;)?\)/g, (m, alt, url, title) => {
+    const safe = markdownURL(url.replace(/&amp;/g, '&'));
+    return safe ? `<img src="${esc(safe)}" alt="${alt}" title="${esc(title || '')}" loading="lazy">` : m;
+  });
+  text = text.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+&quot;([^&]*)&quot;)?\)/g, (m, label, url, title) => {
+    const safe = markdownURL(url.replace(/&amp;/g, '&'));
+    return safe ? `<a href="${esc(safe)}" title="${esc(title || '')}" target="_blank" rel="noopener noreferrer">${label}</a>` : m;
+  });
+  text = text.replace(/\*\*\*([^*]+)\*\*\*/g, '<strong><em>$1</em></strong>');
+  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+  text = text.replace(/___([^_]+)___/g, '<strong><em>$1</em></strong>');
+  text = text.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+  text = text.replace(/(?<![\w])_([^_\n]+)_(?![\w])/g, '<em>$1</em>');
+  text = text.replace(/~~([^~]+)~~/g, '<del>$1</del>');
+  text = text.replace(/ {2,}$/, '<br>');
+  return text;
+}
+function renderMarkdown(source) {
+  const lines = String(source || '').replace(/\r\n?/g, '\n').split('\n');
+  let out = [], i = 0, listType = null, paragraph = [];
+  const closeList = () => { if (listType) { out.push(`</${listType}>`); listType = null; } };
+  const closeParagraph = () => { if (paragraph.length) { out.push(`<p>${inlineMarkdown(paragraph.join('\n'))}</p>`); paragraph = []; } };
+  while (i < lines.length) {
+    const line = lines[i];
+    const fence = line.match(/^```(\w*)\s*$/);
+    if (fence) {
+      closeParagraph(); closeList();
+      const code = [];
+      i++;
+      while (i < lines.length && !/^```\s*$/.test(lines[i])) code.push(lines[i++]);
+      i++;
+      out.push(`<pre><code class="language-${esc(fence[1] || 'text')}">${esc(code.join('\n'))}</code></pre>`);
+      continue;
+    }
+    if (/^\s*$/.test(line)) { closeParagraph(); closeList(); i++; continue; }
+    const heading = line.match(/^(#{1,6})\s+(.*?)\s*#*$/);
+    if (heading) { closeParagraph(); closeList(); out.push(`<h${heading[1].length}>${inlineMarkdown(heading[2])}</h${heading[1].length}>`); i++; continue; }
+    if (/^\s*([-*_])\s*\1\s*\1[\s-*_]*$/.test(line)) { closeParagraph(); closeList(); out.push('<hr>'); i++; continue; }
+    const tableMatch = i + 1 < lines.length && /^\s*\|.*\|\s*$/.test(line) && /^\s*\|?[\s:|-]+\|[\s:|-]*$/.test(lines[i + 1]);
+    if (tableMatch) {
+      closeParagraph(); closeList();
+      const cells = row => row.trim().replace(/^\||\|$/g, '').split('|').map(c => inlineMarkdown(c.trim()));
+      const headers = cells(line);
+      i += 2;
+      const rows = [];
+      while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) rows.push(cells(lines[i++]));
+      out.push(`<table><thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`);
+      continue;
+    }
+    const quote = line.match(/^>\s?(.*)$/);
+    if (quote) {
+      closeParagraph(); closeList();
+      const body = [];
+      while (i < lines.length && /^>\s?/.test(lines[i])) body.push(lines[i++].replace(/^>\s?/, ''));
+      out.push(`<blockquote>${renderMarkdown(body.join('\n'))}</blockquote>`);
+      continue;
+    }
+    const bullet = line.match(/^(\s*)[-*+]\s+(.*)$/);
+    if (bullet) {
+      closeParagraph();
+      if (listType !== 'ul') { closeList(); out.push('<ul>'); listType = 'ul'; }
+      out.push(`<li>${inlineMarkdown(bullet[2])}</li>`);
+      i++;
+      continue;
+    }
+    const ordered = line.match(/^(\s*)\d+[.)]\s+(.*)$/);
+    if (ordered) {
+      closeParagraph();
+      if (listType !== 'ol') { closeList(); out.push('<ol>'); listType = 'ol'; }
+      out.push(`<li>${inlineMarkdown(ordered[2])}</li>`);
+      i++;
+      continue;
+    }
+    closeList();
+    paragraph.push(line.trim());
+    i++;
+  }
+  closeParagraph(); closeList();
+  return out.join('');
+}
+
+function parseNoteStudyItems(text, requested) {
+  let t = String(text || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
+  const match = t.match(/\[[\s\S]*\]/);
+  if (!match) throw new Error('AI did not return valid study material');
+  const arr = JSON.parse(match[0]);
+  const items = arr.filter(Boolean).map(item => {
+    if (item.kind === 'flashcard' && item.front && item.back) {
+      return { type: 'flashcard', front: String(item.front).trim(), back: String(item.back).trim(), explanation: String(item.explanation || '').trim() };
+    }
+    if (Array.isArray(item.choices) && typeof item.answerIndex === 'number' && item.question && item.choices[item.answerIndex]) {
+      const choices = [...new Set(item.choices.map(c => String(c).trim()).filter(Boolean))].slice(0, 4);
+      const correct = String(item.choices[item.answerIndex]).trim();
+      const answerIndex = choices.findIndex(c => c.toLowerCase() === correct.toLowerCase());
+      if (answerIndex >= 0 && choices.length >= 2) {
+        return { type: 'quiz', question: String(item.question).trim(), choices, answerIndex, explanation: String(item.explanation || '').trim() };
+      }
+    }
+    return null;
+  }).filter(Boolean);
+  if (!items.length) throw new Error('AI returned no usable items');
+  return items.slice(0, requested);
+}
+
+function noteStudyPrompt(content, mode, count) {
+  const format = mode === 'flashcards'
+    ? 'flashcards only: {"kind":"flashcard","front":"...","back":"...","explanation":"..."}'
+    : mode === 'quiz'
+      ? 'multiple-choice questions only: {"kind":"quiz","question":"...","choices":["A","B","C","D"],"answerIndex":0,"explanation":"..."}'
+      : 'both kinds, mixed: {"kind":"flashcard",...} or {"kind":"quiz",...}';
+  return `You are a study coach. Based on the Markdown note below, create ${count} high-quality ${mode === 'flashcards' ? 'flashcards' : mode === 'quiz' ? 'multiple-choice questions' : 'study items'} that test the most important concepts.\nUse this JSON object shape: ${format}. Make distractors plausible but clearly wrong. Explanations must be concise.\nRespond with ONLY a JSON array of ${count} items, with no extra text.\n\nNOTE:\n${content.slice(0, 60000)}`;
+}
+
+function openNoteStudyModal() {
+  const note = activeNote();
+  if (!note || !note.content.trim()) {
+    saveCurrentNote();
+    showToast('Write or paste some note text first.');
+    return;
+  }
+  saveCurrentNote({ rerenderPreview: true });
+  document.getElementById('noteStudyTitle').textContent = `Study “${noteDisplayName(note)}”`;
+  document.getElementById('noteStudyStatus').textContent = '';
+  openModal(document.getElementById('noteStudyModal'));
+}
+
+async function generateNoteStudy(mode) {
+  const note = activeNote();
+  if (!note) return;
+  const count = parseInt(document.getElementById('noteStudyCount').value, 10);
+  const status = document.getElementById('noteStudyStatus');
+  if (!AI.isConfigured()) {
+    status.textContent = 'Add an AI provider and API key in Settings first.';
+    status.style.color = 'var(--amber)';
+    return;
+  }
+  document.getElementById('noteStudyModal').classList.remove('open');
+  const inner = document.getElementById('studyInner');
+  noteSession = { note, mode, items: [], index: 0, results: [], answered: false, startedAt: 0, savedStats: false };
+  showView('study');
+  inner.innerHTML = `
+    <div class="study-topbar">
+      <button class="btn-ghost" id="cancelNotePrep"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back</button>
+      <div class="study-deck-name">${esc(noteDisplayName(note))}</div>
+      <div></div>
+    </div>
+    <div class="quiz-loading" style="max-width:480px;margin:80px auto 16px">AI is creating ${count} ${mode === 'both' ? 'cards and questions' : mode === 'quiz' ? 'questions' : 'flashcards'}…</div>
+    <div class="progress-track" style="max-width:480px;margin:0 auto"><div class="progress-fill" style="width:35%"></div></div>`;
+  document.getElementById('cancelNotePrep').addEventListener('click', () => {
+    noteSession = null;
+    openNote(note.id);
+  });
+  try {
+    const items = parseNoteStudyItems(await AI.complete(noteStudyPrompt(note.content, mode, count)), count);
+    noteSession.items = shuffleArr(items);
+    noteSession.startedAt = Date.now();
+    renderNoteStudy();
+  } catch (err) {
+    noteSession = null;
+    status.textContent = `Generation failed: ${err.message}`;
+    status.style.color = 'var(--red)';
+    openNote(note.id);
+    showToast('AI study generation failed');
+  }
+}
+
+function renderNoteStudy() {
+  if (!noteSession) return;
+  if (noteSession.index >= noteSession.items.length) { renderNoteSummary(); return; }
+  const { note, items, index } = noteSession;
+  const item = items[index];
+  const progress = Math.round(index / items.length * 100);
+  let body = '';
+  if (item.type === 'flashcard') {
+    body = `
+      <div class="flashcard-scene">
+        <div class="flashcard" id="flashcard" role="button" tabindex="0" aria-pressed="false" aria-label="Reveal answer">
+          <div class="flashcard-face front"><div class="flashcard-text">${esc(item.front)}</div></div>
+          <div class="flashcard-face back"><div class="flashcard-text">${esc(item.back)}</div></div>
+        </div>
+      </div>
+      <div class="answer-btns" id="noteAnswerBtns" style="visibility:hidden">
+        <button class="ans-btn again" data-ans="wrong">Still learning</button>
+        <button class="ans-btn good" data-ans="correct">Got it</button>
+      </div>
+      <div class="study-hint">Space flips or answers · Esc exits</div>`;
+  } else {
+    body = `
+      <div class="flashcard-scene">
+        <div class="flashcard-face front" style="position:relative;height:auto;min-height:180px;cursor:default;padding:54px 24px 24px">
+          <div class="flashcard-text">${esc(item.question)}</div>
+        </div>
+      </div>
+      <div id="noteQuizChoices" style="max-width:720px;margin:0 auto">
+        ${item.choices.map((choice, ci) => `<button class="quiz-choice" data-correct="${ci === item.answerIndex ? '1' : ''}">${esc(choice)}</button>`).join('')}
+      </div>
+      <div class="study-hint">Press 1–4 to answer · Esc exits</div>`;
+  }
+  const inner = document.getElementById('studyInner');
+  inner.innerHTML = `
+    <div class="note-study-item">
+      <div class="study-topbar">
+        <button class="btn-ghost" id="exitStudy"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back</button>
+        <div class="study-deck-name">${esc(noteDisplayName(note))}</div>
+        <div style="font-size:13px;color:var(--text-3);font-weight:500;font-variant-numeric:tabular-nums">${index + 1} / ${items.length}</div>
+      </div>
+      <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}" aria-label="Note study progress"><div class="progress-fill" style="width:${progress}%"></div></div>
+      ${body}
+      <div id="noteExplanation"></div>
+    </div>`;
+  document.getElementById('exitStudy').addEventListener('click', () => {
+    if (noteSession.results.length) saveNoteStudyHistory();
+    noteSession = null;
+    openNote(note.id);
+  });
+  if (item.type === 'flashcard') {
+    const fc = document.getElementById('flashcard');
+    const flip = () => {
+      const flipped = fc.classList.toggle('flipped');
+      fc.setAttribute('aria-pressed', String(flipped));
+      document.getElementById('noteAnswerBtns').style.visibility = 'visible';
+    };
+    fc.addEventListener('click', flip);
+    fc.addEventListener('keydown', e => {
+      if ((e.key === 'Enter' || e.key === ' ') && document.activeElement === fc) { e.preventDefault(); flip(); }
+    });
+    document.getElementById('noteAnswerBtns').addEventListener('click', e => {
+      const btn = e.target.closest('[data-ans]');
+      if (btn) recordNoteResult(btn.dataset.ans === 'correct');
+    });
+  } else {
+    document.getElementById('noteQuizChoices').addEventListener('click', e => {
+      const btn = e.target.closest('.quiz-choice');
+      if (!btn || noteSession.answered) return;
+      noteSession.answered = true;
+      const correct = btn.dataset.correct === '1';
+      document.querySelectorAll('#noteQuizChoices .quiz-choice').forEach(option => {
+        option.disabled = true;
+        if (option.dataset.correct === '1') option.classList.add('correct');
+        else if (option === btn) option.classList.add('wrong');
+      });
+      setTimeout(() => recordNoteResult(correct), 1000);
+    });
+  }
+}
+
+function recordNoteResult(correct) {
+  if (!noteSession) return;
+  noteSession.results.push(correct);
+  noteSession.index++;
+  noteSession.answered = false;
+  renderNoteStudy();
+}
+
+function saveNoteStudyHistory() {
+  if (!noteSession || !noteSession.results.length || noteSession.savedStats) return;
+  state.studyHistory.push({
+    completedAt: Date.now(),
+    seconds: Math.min(86400, Math.max(1, (Date.now() - noteSession.startedAt) / 1000)),
+    deckId: `note-${noteSession.note.id}`,
+    deckName: `${noteSession.note.title} (note)`,
+    mode: noteSession.mode === 'quiz' ? 'quiz' : 'flashcards',
+    results: noteSession.results.map(correct => ({ id: '', correct: !!correct })),
+  });
+  state.studyHistory = state.studyHistory.slice(-200);
+  persistStudyHistory();
+  noteSession.savedStats = true;
+}
+
+function renderNoteSummary() {
+  saveNoteStudyHistory();
+  const { note, items, results } = noteSession;
+  const correct = results.filter(Boolean).length;
+  const pct = Math.round(correct / items.length * 100);
+  const color = pct >= 80 ? 'var(--green)' : pct >= 50 ? 'var(--amber)' : 'var(--red)';
+  document.getElementById('studyInner').innerHTML = `
+    <div class="summary-wrap">
+      <div class="summary-ring">
+        <svg width="120" height="120"><circle cx="60" cy="60" r="50" fill="none" stroke="var(--surface-2)" stroke-width="7"/><circle cx="60" cy="60" r="50" fill="none" stroke="${color}" stroke-width="7" stroke-linecap="round" style="stroke-dasharray:314;stroke-dashoffset:${314 * (1 - pct / 100)};transform:rotate(-90deg);transform-origin:center"/></svg>
+        <div class="summary-pct">${pct}%</div>
+      </div>
+      <div class="summary-title">Note study complete</div>
+      <div class="summary-sub">You got ${correct} of ${items.length} correct from “${esc(noteDisplayName(note))}”.</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn-secondary" id="noteSummaryBack">Back to note</button>
+        <button class="btn-primary" id="noteSummaryAgain">Generate new study set</button>
+      </div>
+    </div>`;
+  document.getElementById('noteSummaryBack').addEventListener('click', () => {
+    noteSession = null;
+    openNote(note.id);
+  });
+  document.getElementById('noteSummaryAgain').addEventListener('click', () => openNoteStudyModal());
+}
+
+function endActiveNoteSession() {
+  if (!noteSession) return;
+  if (noteSession.results.length && !noteSession.savedStats) saveNoteStudyHistory();
+  noteSession = null;
+}
+
+function renderAllSidebarOnly() {
+  renderSidebar();
+  renderHome();
+  renderOverview();
+}
+
+document.getElementById('newLibraryItemBtn').addEventListener('click', () => openModal(document.getElementById('newLibraryItemModal')));
+document.getElementById('newLibraryItemModal').addEventListener('click', e => {
+  const item = e.target.closest('[data-new-library-item]');
+  if (!item) return;
+  closeModal(document.getElementById('newLibraryItemModal'));
+  if (item.dataset.newLibraryItem === 'note') createNote();
+  else openDeckModal();
+});
+document.getElementById('backToOverview').addEventListener('click', () => {
+  saveCurrentNote({ rerenderPreview: true });
+  endActiveNoteSession();
+  if (isMobileViewport.matches) setMobileSidebar(false);
+  showView('home');
+  renderHome();
+});
+document.getElementById('noteTitleInput').addEventListener('input', () => {
+  clearTimeout(noteSaveTimer);
+  noteSaveTimer = setTimeout(() => { saveCurrentNote(); renderSidebarNotes(); }, 150);
+});
+richNoteEditor().addEventListener('input', () => {
+  clearTimeout(noteSaveTimer);
+  noteSaveTimer = setTimeout(() => { saveCurrentNote(); renderSidebarNotes(); }, 100);
+});
+richNoteEditor().addEventListener('blur', () => saveCurrentNote());
+rawNoteEditor().addEventListener('input', () => {
+  clearTimeout(noteSaveTimer);
+  noteSaveTimer = setTimeout(() => { saveCurrentNote(); renderSidebarNotes(); }, 150);
+});
+rawNoteEditor().addEventListener('blur', () => saveCurrentNote());
+richNoteEditor().addEventListener('paste', e => {
+  e.preventDefault();
+  const text = e.clipboardData?.getData('text/plain') || '';
+  document.execCommand('insertText', false, text);
+});
+document.getElementById('studyNoteBtn').addEventListener('click', openNoteStudyModal);
+document.getElementById('deleteActiveNoteBtn').addEventListener('click', () => {
+  const note = activeNote();
+  if (note) deleteNote(note.id);
+});
+document.querySelectorAll('[data-note-mode]').forEach(button => button.addEventListener('click', () => setNoteViewMode(button.dataset.noteMode)));
+document.getElementById('noteFormatToolbar').addEventListener('mousedown', e => {
+  if (e.target.closest('button')) e.preventDefault();
+});
+document.getElementById('noteFormatToolbar').addEventListener('click', e => {
+  const button = e.target.closest('[data-note-format]');
+  if (button) applyNoteFormat(button.dataset.noteFormat);
+});
+richNoteEditor().addEventListener('keydown', e => {
+  if (!(e.metaKey || e.ctrlKey)) return;
+  const format = { b: 'bold', i: 'italic', k: 'link' }[e.key.toLowerCase()];
+  if (format) {
+    e.preventDefault();
+    applyNoteFormat(format);
+  }
+});
+document.querySelectorAll('[data-note-study-mode]').forEach(button => button.addEventListener('click', () => generateNoteStudy(button.dataset.noteStudyMode)));
 // ==================== MISC ====================
 document.querySelectorAll('[data-close]').forEach(btn =>
   btn.addEventListener('click', () => closeModal(document.getElementById(btn.dataset.close))));
@@ -3396,6 +4216,11 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     const back = document.getElementById('exitStudy') || document.getElementById('summaryBack');
     if (back) back.click();
+    return;
+  }
+  if (noteSession && noteSession.index < noteSession.items.length) {
+    const item = noteSession.items[noteSession.index];
+    if (e.key === '1' && item.type === 'quiz') document.querySelector('#noteQuizChoices .quiz-choice')?.click();
     return;
   }
   if (!session || session.index >= session.cards.length) return;
@@ -3434,6 +4259,7 @@ function renderAll() {
   renderOverview();
 }
 if (!state.decks.some(d => d.id === state.activeDeckId)) state.activeDeckId = state.decks[0]?.id || null;
+if (!state.notes.some(n => n.id === state.activeNoteId)) state.activeNoteId = state.notes[0]?.id || null;
 applyPrefs();
 showView('home');
 renderAll();

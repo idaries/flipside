@@ -19,6 +19,7 @@ Then open http://localhost:8080.
 ## Features
 
 - Flashcards and multiple-choice sessions
+- Live formatted notes with a Markdown source view and AI-generated flashcards/quizzes
 - Optional FSRS spaced repetition on individual decks
 - Front-first / back-first study
 - Local deck folders
