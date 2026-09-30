@@ -22,7 +22,7 @@ Then open http://localhost:8080.
 - Optional FSRS spaced repetition on individual decks
 - Front-first / back-first study
 - Local deck folders
-- Quizlet / Anki TSV import and export
+- Anki TSV import and export
 - Optional AI-assisted file import and quiz distractors
 - Themes, persisted study preferences, card search, a study dashboard, and JSON backup/restore
 - Reversible card deletion and drag-and-drop text file import
