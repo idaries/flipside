@@ -182,7 +182,8 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
   position: absolute; right: 8px; bottom: 8px;
   display:flex; opacity:0; pointer-events:none; transition:opacity .1s;
 }
-.deck-item:hover .deck-actions, .deck-item:focus-within .deck-actions { opacity:1; pointer-events:auto; }
+.deck-item:hover .deck-actions, .deck-item:focus-within .deck-actions,
+.folder-row:hover .deck-actions, .folder-row:focus-within .deck-actions { opacity:1; pointer-events:auto; }
 @media (hover:none) { .deck-actions { opacity:1; pointer-events:auto; } }
 .icon-btn-sm {
   width: 25px; height: 25px; border-radius: 7px; border: none; background: transparent;
@@ -248,6 +249,7 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
 .seg-btn:hover { color: var(--text); }
 .seg-btn.active { background: var(--surface-3); color: var(--text); }
 .seg-btn svg { width: 14px; height: 14px; }
+.ai-sparkle { width: 14px; height: 14px; color: var(--accent); opacity: .9; }
 .switch { position: relative; width: 44px; height: 26px; flex-shrink: 0; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider {
@@ -754,8 +756,10 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
       </div>
       <div class="opt-row" id="aiDistractorRow">
         <div class="opt-row-text">
-          <div class="opt-row-label" id="aiDistractorLabel">AI distractors</div>
-          <div class="opt-row-sub" id="aiDistractorSub">Use your AI provider to write plausible wrong answers</div>
+          <div class="opt-row-label" id="aiDistractorLabel">AI distractors
+            <svg class="ai-sparkle" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l4 4-9 9H4v-4z"/></svg>
+          </div>
+          <div class="opt-row-sub" id="aiDistractorSub">Use AI to write plausible wrong answers</div>
         </div>
         <label class="switch" aria-labelledby="aiDistractorLabel"><input type="checkbox" id="aiDistractorToggle" aria-labelledby="aiDistractorLabel"><span class="slider"></span></label>
       </div>
@@ -790,6 +794,16 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
     <div id="deckActionsMenu" role="menu" aria-label="Deck actions"></div>
     <div class="modal-actions">
       <button class="btn-secondary" data-close="deckActionsModal">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="folderActionsModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="folderActionsTitle" style="width:min(340px, calc(100vw - 40px))">
+    <h2 id="folderActionsTitle" style="margin-bottom:14px">Folder actions</h2>
+    <div id="folderActionsMenu" role="menu" aria-label="Folder actions"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" data-close="folderActionsModal">Cancel</button>
     </div>
   </div>
 </div>
@@ -911,6 +925,8 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
         <button class="seg-btn" data-source="photo" style="flex:1;justify-content:center">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
           Photo / file
+          <svg class="ai-sparkle" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l4 4-9 9H4v-4z"/></svg>
+          <span class="sr-only">Uses AI</span>
         </button>
       </div>
       <div class="opt-row-sub" style="margin-top:8px" id="importHint">In Anki, select the deck → File → Export → format “Text separated by tabs (.txt)” → export, then upload or paste the file here. Header lines starting with # are skipped.</div>
@@ -1301,30 +1317,12 @@ function buildFolderRow(folder) {
       </div>
     </button>
     <div class="deck-actions">
-      <button class="icon-btn-sm" data-rename-folder="${folder.id}" title="Rename folder" aria-label="Rename folder">
-        <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
-      </button>
-      <button class="icon-btn-sm danger" data-del-folder="${folder.id}" title="Delete folder" aria-label="Delete folder">
-        <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+      <button class="icon-btn-sm" data-actions-folder="${folder.id}" title="Folder actions" aria-label="Actions for folder ${esc(folder.name)}" aria-haspopup="dialog">
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>
       </button>
     </div>`;
   row.addEventListener('click', e => {
-    if (e.target.closest('[data-rename-folder]')) {
-      const name = prompt('Rename folder:', folder.name);
-      if (name && name.trim()) {
-        folder.name = name.trim().slice(0, 40);
-        save(); renderSidebar();
-      }
-      return;
-    }
-    if (e.target.closest('[data-del-folder]')) {
-      if (confirm(`Delete folder "${folder.name}"? Its decks will stay in your library.`)) {
-        state.decks.forEach(d => { if (d.folderId === folder.id) d.folderId = null; });
-        state.folders = state.folders.filter(f => f.id !== folder.id);
-        save(); renderAll();
-      }
-      return;
-    }
+    if (e.target.closest('[data-actions-folder]')) { openFolderActionsModal(folder); return; }
     state.collapsedFolders = state.collapsedFolders.includes(folder.id)
       ? state.collapsedFolders.filter(id => id !== folder.id)
       : [...state.collapsedFolders, folder.id];
@@ -1348,6 +1346,46 @@ function renderSidebar() {
     list.appendChild(wrap);
   });
 }
+
+// ==================== FOLDER ACTIONS ====================
+const folderActionsModal = document.getElementById('folderActionsModal');
+let folderActionTarget = null;
+
+function openFolderActionsModal(folder) {
+  folderActionTarget = folder;
+  document.getElementById('folderActionsTitle').textContent = `“${folder.name}” actions`;
+  document.getElementById('folderActionsMenu').innerHTML = `
+    <button class="menu-item" role="menuitem" data-folder-action="edit">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
+      Edit folder
+    </button>
+    <button class="menu-item danger" role="menuitem" data-folder-action="delete">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+      Remove folder
+    </button>`;
+  openModal(folderActionsModal, document.querySelector('#folderActionsMenu .menu-item'));
+}
+
+document.getElementById('folderActionsMenu').addEventListener('click', e => {
+  const item = e.target.closest('[data-folder-action]');
+  if (!item || !folderActionTarget) return;
+  const action = item.dataset.folderAction;
+  const folder = folderActionTarget;
+  closeModal(folderActionsModal);
+  if (action === 'edit') {
+    const name = prompt('Edit folder name:', folder.name);
+    if (name && name.trim()) {
+      folder.name = name.trim().slice(0, 40);
+      save(); renderSidebar();
+    }
+  } else if (action === 'delete') {
+    if (confirm(`Remove folder "${folder.name}"? Its decks will stay in your library.`)) {
+      state.decks.forEach(d => { if (d.folderId === folder.id) d.folderId = null; });
+      state.folders = state.folders.filter(f => f.id !== folder.id);
+      save(); renderAll();
+    }
+  }
+});
 
 // ==================== HOME ====================
 function relativeStudyDate(timestamp) {
@@ -1819,10 +1857,15 @@ function hashText(value) {
   return `${text.length}-${(hash >>> 0).toString(36)}`;
 }
 
+function currentAiModel() {
+  const provider = AI_PROVIDERS[aiCfg.provider];
+  return (aiCfg.models[aiCfg.provider] || provider?.defaultModel || '').trim();
+}
+
 function aiDistractorKey(card, side) {
   const question = side === 'front' ? card.front : card.back;
   const answer = side === 'front' ? card.back : card.front;
-  return `${side}|${hashText(question)}|${hashText(answer)}`;
+  return `${aiCfg.provider}|${hashText(currentAiModel())}|${side}|${hashText(question)}|${hashText(answer)}`;
 }
 
 function buildDeckDistractors(deck, card, side) {
@@ -1841,7 +1884,33 @@ function buildDeckDistractors(deck, card, side) {
   return shuffleArr([answer, ...wrong]);
 }
 
-const aiCache = {};
+const AI_CACHE_KEY = 'flash-ai-distractors-v1';
+const AI_CACHE_LIMIT = 300;
+
+function loadAiCache() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(AI_CACHE_KEY) || '{}');
+    return Object.fromEntries(Object.entries(parsed)
+      .filter(([, value]) => Array.isArray(value) && value.every(item => typeof item === 'string'))
+      .slice(-AI_CACHE_LIMIT));
+  } catch (e) {
+    return {};
+  }
+}
+
+const aiCache = loadAiCache();
+
+function cacheDistractors(key, value) {
+  if (!key || !Array.isArray(value)) return;
+  aiCache[key] = value;
+  try {
+    const entries = Object.entries(aiCache).slice(-AI_CACHE_LIMIT);
+    localStorage.setItem(AI_CACHE_KEY, JSON.stringify(Object.fromEntries(entries)));
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 const AI = {
   isConfigured() {
     const p = AI_PROVIDERS[aiCfg.provider];
@@ -1931,7 +2000,7 @@ const AI = {
     const answer = side === 'front' ? card.back : card.front;
     const prompt = `You are writing distractors for a multiple-choice flashcard quiz. Question: "${question.replace(/"/g, String.fromCharCode(34))}" Correct answer: "${answer.replace(/"/g, String.fromCharCode(34))}" Generate exactly 3 plausible but INCORRECT alternative answers. Match the format and rough length of the correct answer. They must be clearly wrong to someone who knows the material. Respond with ONLY a JSON array of 3 strings and nothing else.`;
     const out = parseJsonArray(await this.complete(prompt), answer);
-    aiCache[cacheKey] = out;
+    cacheDistractors(cacheKey, out);
     return out;
   },
 };
@@ -2179,7 +2248,7 @@ async function prefetchDistractors() {
       results.forEach((r, j) => {
         const key = aiDistractorKey(batch[j], current.side);
         if (r) {
-          aiCache[key] = r;
+          cacheDistractors(key, r);
           current.distractors[key] = r;
         } else if (!(key in current.distractors)) {
           current.distractors[key] = null; // fall back to deck-based choices for this card
@@ -2238,7 +2307,7 @@ function updateStudyModal() {
     sub.textContent = 'Add an AI provider and API key in Settings to enable this';
     sub.style.color = 'var(--amber)';
   } else {
-    sub.textContent = `Use ${AI_PROVIDERS[aiCfg.provider].label} to write plausible wrong answers`;
+    sub.textContent = 'Use AI to write plausible wrong answers';
     sub.style.color = '';
   }
 }
@@ -2890,7 +2959,7 @@ document.getElementById('cardModeTabs').addEventListener('click', e => {
 
 const IMPORT_HINTS = {
   anki: 'In Anki, select the deck → File → Export → format “Text separated by tabs (.txt)” → export, then upload or paste the file here. Header lines starting with # are skipped.',
-  photo: 'Use any photo or file — choose, drop, or paste it. AI turns the content into cards. Requires an AI provider + API key in Settings.',
+  photo: 'Uses AI · choose, drop, or paste any photo or file. Requires an API key in Settings.',
 };
 
 function updateImportSections() {
@@ -3069,6 +3138,51 @@ let importAttachment = null;
 
 const TEXT_FILE_RE = /\.(txt|md|csv|tsv)$/i;
 
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('Could not read image'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function canvasToDataURL(canvas, mime, quality) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(blob => {
+      if (!blob) { reject(new Error('Could not optimize image')); return; }
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('Could not optimize image'));
+      reader.readAsDataURL(blob);
+    }, mime, quality);
+  });
+}
+
+async function optimizeImageAttachment(file) {
+  const original = await readFileAsDataURL(file);
+  // Small images upload quickly already; SVGs do not benefit from canvas re-encoding.
+  if (file.size < 768 * 1024 || file.type === 'image/svg+xml') return original;
+  try {
+    const MAX_DIMENSION = 1800;
+    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+    const context = canvas.getContext('2d');
+    context.fillStyle = '#fff';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close?.();
+    const optimized = await canvasToDataURL(canvas, 'image/jpeg', 0.82);
+    return optimized.length < original.length ? optimized : original;
+  } catch (err) {
+    console.error(err);
+    return original;
+  }
+}
+
 function setImportFile(file, statusMsg) {
   const status = document.getElementById('aiExtractStatus');
   const thumb = document.getElementById('photoThumb');
@@ -3088,16 +3202,16 @@ function setImportFile(file, statusMsg) {
   const isText = file.type.startsWith('text/') || TEXT_FILE_RE.test(name);
 
   if (isImage) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      importAttachment = { kind: 'image', mime: file.type, base64: reader.result.split(',')[1], name };
+    optimizeImageAttachment(file).then(dataUrl => {
+      importAttachment = { kind: 'image', mime: 'image/jpeg', base64: dataUrl.split(',')[1], name };
       syncImportButton(0);
-      thumb.src = reader.result; thumb.style.display = ''; chip.style.display = 'none';
+      thumb.src = dataUrl; thumb.style.display = ''; chip.style.display = 'none';
       document.getElementById('photoThumbWrap').style.display = '';
       if (statusMsg) { status.textContent = statusMsg; status.style.color = 'var(--green)'; }
       else { status.textContent = ''; status.style.color = ''; }
-    };
-    reader.readAsDataURL(file);
+    }).catch(err => {
+      status.textContent = err.message; status.style.color = 'var(--amber)';
+    });
   } else if (isPdf) {
     const reader = new FileReader();
     reader.onload = () => {
