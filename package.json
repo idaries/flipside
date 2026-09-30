@@ -4,7 +4,7 @@
   "private": true,
   "description": "A local-first flashcard and multiple-choice study app.",
   "scripts": {
-    "test": "node tests/syntax.js && node tests/scheduler.cjs",
+    "test": "node tests/app.test.cjs",
     "serve": "python3 -m http.server 8080"
   }
 }

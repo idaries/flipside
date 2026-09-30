@@ -16,6 +16,14 @@ python3 -m http.server 8080
 
 Then open http://localhost:8080.
 
+## Development
+
+Run the lightweight syntax, scheduler, import, Markdown, and UI-behavior tests:
+
+```sh
+npm test
+```
+
 ## Features
 
 - Flashcards and multiple-choice sessions
@@ -25,7 +33,7 @@ Then open http://localhost:8080.
 - Local deck folders
 - Anki TSV import and export
 - Optional AI-assisted file import and quiz distractors
-- Themes, persisted study preferences, card search, a study dashboard, and JSON backup/restore
+- Themes, persisted study preferences, card search, a study dashboard with FSRS workload, and JSON backup/restore
 - Reversible card deletion and drag-and-drop text file import
 
 ## Data

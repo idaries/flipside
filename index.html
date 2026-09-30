@@ -328,7 +328,7 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
 }
 .home-sub { color: var(--text-2); margin-top: 6px; font-size: 14px; font-weight: 400; }
 .home-stats {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); gap: 12px; margin-bottom: 16px;
 }
 .stat-card {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
@@ -550,6 +550,12 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
   animation: pulse 1.2s ease-in-out infinite;
 }
 .quiz-note { font-size: 12px; color: var(--text-3); margin-top: 8px; text-align: center; }
+.note-explanation {
+  margin: 14px auto 0; max-width: 620px; padding: 12px 14px; border-radius: 10px;
+  border: 1px solid var(--border-2); background: var(--surface); color: var(--text-2);
+  font-size: 13px; line-height: 1.55; text-align: left;
+}
+.note-explanation strong { color: var(--text); }
 @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
 /* Summary */
@@ -699,6 +705,7 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
         </button>
       </div>
       <div id="deckList"></div>
+      <div class="section-label sidebar-label"><span>Notes</span></div>
       <div id="noteList" style="margin-top:2px"></div>
     </div>
     <button class="new-deck-btn" id="newLibraryItemBtn">
@@ -1050,7 +1057,7 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
     <div class="field">
       <label for="aiModelSelect">Model</label>
       <select id="aiModelSelect"></select>
-      <input id="aiModel" placeholder="Provider default" style="display:none;margin-top:8px">
+      <input id="aiModel" aria-label="Custom AI model" placeholder="Provider default" style="display:none;margin-top:8px">
     </div>
     <div class="field">
       <label for="aiKey">API key <span style="color:var(--text-3);font-weight:400">— stored only in this browser, sent only to the provider</span></label>
@@ -1388,7 +1395,6 @@ let state = {
   selectedColor: COLORS[0],
   editingDeckId: null,
   editingCardId: null,
-  collapsedFolders: [],
   activeNoteId: null,
   options: loadOptions(),
   collapsedFolders: loadCollapsedFolders(),
@@ -1406,6 +1412,15 @@ function save() {
   }
 }
 function activeDeck() { return state.decks.find(d => d.id === state.activeDeckId); }
+function setActiveDeck(id, { saveData = true } = {}) {
+  const changed = state.activeDeckId !== id;
+  state.activeDeckId = id;
+  if (changed) {
+    const search = document.getElementById('cardSearch');
+    if (search) search.value = '';
+  }
+  if (saveData) save();
+}
 function esc(s) { return String(s ?? '')
     .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;').replaceAll("'", '&#39;'); }
@@ -1510,8 +1525,7 @@ function buildDeckItem(deck) {
   div.addEventListener('click', e => {
     if (e.target.closest('[data-actions-deck]')) { openDeckActionsModal(deck); return; }
     endActiveSession();
-    state.activeDeckId = deck.id;
-    save();
+    setActiveDeck(deck.id);
     if (isMobileViewport.matches) setMobileSidebar(false);
     showView('overview'); renderAll();
   });
@@ -1637,6 +1651,9 @@ function renderHome() {
     cursor.setDate(cursor.getDate() - 1);
   }
 
+  const dueReviews = state.decks
+    .filter(deck => deck.fsrs && deck.cards.length)
+    .reduce((total, deck) => total + fsrsCounts(deck).due, 0);
   const recentAnswers = history.slice().reverse().flatMap(entry => entry.results).slice(-50);
   const correctAnswers = recentAnswers.filter(answer => answer.correct).length;
   const accuracy = recentAnswers.length ? Math.round(correctAnswers / recentAnswers.length * 100) : null;
@@ -1656,6 +1673,11 @@ function renderHome() {
       <div class="stat-label">Accuracy</div>
       <div class="stat-value">${accuracy === null ? '—' : accuracy + '%'}</div>
       <div class="stat-note">Last 50 answers</div>
+    </article>
+    <article class="stat-card">
+      <div class="stat-label">Due reviews</div>
+      <div class="stat-value">${dueReviews}</div>
+      <div class="stat-note">Across FSRS decks</div>
     </article>`;
 
   const chart = document.getElementById('studyActivity');
@@ -1718,8 +1740,7 @@ function renderHome() {
 document.getElementById('deckProgressList').addEventListener('click', e => {
   const btn = e.target.closest('[data-study-deck]');
   if (!btn || !state.decks.some(d => d.id === btn.dataset.studyDeck && d.cards.length)) return;
-  state.activeDeckId = btn.dataset.studyDeck;
-  save();
+  setActiveDeck(btn.dataset.studyDeck);
   renderSidebar();
   openStudyModal();
 });
@@ -2362,11 +2383,11 @@ function shuffleArr(arr) {
 function isFsrsActive(deck, mode = state.options.mode) {
   return !!deck?.fsrs && mode !== 'quiz';
 }
-function startSession(deck, cards) {
+function startSession(deck, cards, { preserveCards = false } = {}) {
   if (!cards || !cards.length) return;
   if (session?.results.length) saveStudySession();
   session = null;
-  if (isFsrsActive(deck)) {
+  if (isFsrsActive(deck) && !preserveCards) {
     const due = cards.filter(c => c.schedule && c.schedule.due <= Date.now());
     const fresh = cards.filter(c => !c.schedule);
     cards = [
@@ -2596,7 +2617,7 @@ function renderStudy() {
           </div>
         </div>
       </div>
-      <div class="answer-btns" id="answerBtns" style="visibility:hidden${deck.fsrs ? ' fsrs' : ''}">
+      <div class="answer-btns${deck.fsrs ? ' fsrs' : ''}" id="answerBtns" style="visibility:hidden">
         ${deck.fsrs ? `
           <button class="ans-btn again" data-rating="1"><span>Again</span></button>
           <button class="ans-btn hard" data-rating="2"><span>Hard</span></button>
@@ -2657,11 +2678,12 @@ function renderStudy() {
       fc.setAttribute('aria-label', flipped ? 'Show question' : 'Reveal answer');
       document.getElementById('answerBtns').style.visibility = 'visible';
     };
-    fc.addEventListener('click', flipCard);
+    fc.addEventListener('click', () => { if (!fc.classList.contains('flipped')) flipCard(); });
     fc.addEventListener('keydown', e => {
       if ((e.key === 'Enter' || e.key === ' ') && document.activeElement === fc) {
         e.preventDefault();
-        flipCard();
+        if (fc.classList.contains('flipped')) (document.querySelector('.ans-btn[data-rating="3"]') || document.querySelector('.ans-btn.good'))?.click();
+        else flipCard();
       }
     });
     document.getElementById('answerBtns').addEventListener('click', e => {
@@ -2753,7 +2775,7 @@ function renderSummary() {
   againBtn.disabled = !reviewAgain.length;
   againBtn.addEventListener('click', () => { if (reviewAgain.length) startSession(deck, reviewAgain); });
   const missedBtn = document.getElementById('summaryMissed');
-  if (missedBtn) missedBtn.addEventListener('click', () => startSession(deck, missed));
+  if (missedBtn) missedBtn.addEventListener('click', () => startSession(deck, missed, { preserveCards: true }));
 }
 
 // ==================== DECK MODAL ====================
@@ -2822,9 +2844,12 @@ document.getElementById('deckSaveBtn').addEventListener('click', () => {
   } else {
     const deck = { id: uid(), name, description: desc, color: state.selectedColor, fsrs: document.getElementById('deckFsrsToggle').checked, cards: [] };
     state.decks.push(deck);
-    state.activeDeckId = deck.id;
+    setActiveDeck(deck.id, { saveData: false });
   }
-  save(); deckModal.classList.remove('open'); renderAll();
+  save();
+  deckModal.classList.remove('open');
+  if (!state.editingDeckId) showView('overview');
+  renderAll();
 });
 
 // ==================== CARD MODAL ====================
@@ -3034,7 +3059,7 @@ document.getElementById('backupFile').addEventListener('change', e => {
       state.activeNoteId = state.notes[0]?.id || null;
       state.studyHistory = backup.studyHistory;
       prefs = { ...prefs, ...backup.prefs };
-      state.activeDeckId = state.decks[0]?.id || null;
+      setActiveDeck(state.decks[0]?.id || null, { saveData: false });
       persistStudyHistory();
       save();
       applyPrefs();
@@ -3088,7 +3113,7 @@ document.getElementById('deckActionsMenu').addEventListener('click', e => {
   else if (action === 'delete') {
     if (confirm(`Delete "${deck.name}" and all its cards?`)) {
       state.decks = state.decks.filter(d => d.id !== deck.id);
-      if (state.activeDeckId === deck.id) state.activeDeckId = state.decks[0]?.id || null;
+      if (state.activeDeckId === deck.id) setActiveDeck(state.decks[0]?.id || null, { saveData: false });
       save(); renderAll();
     }
   }
@@ -3315,8 +3340,7 @@ document.getElementById('importSaveBtn').addEventListener('click', async () => {
   if (importTargetDeck) {
     const deck = importTargetDeck;
     cards.forEach(c => deck.cards.push({ id: uid(), front: c.front, back: c.back, starred: false, schedule: null }));
-    state.activeDeckId = deck.id;
-    save();
+    setActiveDeck(deck.id);
     importTargetDeck = null;
     importAttachment = null;
     fileExtracted = false;
@@ -3335,8 +3359,7 @@ document.getElementById('importSaveBtn').addEventListener('click', async () => {
     cards: cards.map(c => ({ id: uid(), front: c.front, back: c.back, starred: false, schedule: null })),
   };
   state.decks.push(deck);
-  state.activeDeckId = deck.id;
-  save();
+  setActiveDeck(deck.id);
   importTargetDeck = null;
   importAttachment = null;
   fileExtracted = false;
@@ -3507,7 +3530,7 @@ async function runFileExtraction() {
       cards = parseJsonCards(await AI.complete(`${base}\n\nContent:\n\n${importAttachment.text}`));
     } else {
       const kindLabel = importAttachment.kind === 'pdf' ? 'this PDF document' : 'this image';
-      cards = parseJsonCards(await AI.completeVision(`Extract flashcards from ${kindLabel}. ${base}`, importAttachment));
+      cards = parseJsonCards(await AI.completeVision(`Extract flashcards from ${kindLabel}. ${base.replace(/^Extract flashcards\. /, '')}`, importAttachment));
     }
     const textEl = document.getElementById('importText');
     textEl.value = cards.map(c => `${c.front.replace(/\t/g, ' ')}\t${c.back.replace(/\t/g, ' ')}`).join('\n');
@@ -3668,10 +3691,11 @@ function htmlToMarkdown(node) {
   }
   if (tag === 'table') {
     const rows = Array.from(node.rows || []).map(row =>
-      Array.from(row.cells).map(cell => htmlToMarkdown(cell).replace(/\n+/g, ' ').trim()).join('|')
+      `| ${Array.from(row.cells).map(cell => htmlToMarkdown(cell).replace(/\n+/g, ' ').replace(/\|/g, '\\|').trim()).join(' | ')} |`
     );
     if (!rows.length) return '';
-    return [rows[0], rows[0].replace(/[^|]/g, '-'), ...rows.slice(1)].join('\n');
+    const divider = `|${Array.from(node.rows[0].cells).map(() => '---').join('|')}|`;
+    return [rows[0], divider, ...rows.slice(1)].join('\n');
   }
   if (tag === 'hr') return '\n---\n';
   if (tag === 'p' || tag === 'div') return `\n${child().trim()}\n`;
@@ -3984,11 +4008,19 @@ async function generateNoteStudy(mode) {
     renderNoteStudy();
   } catch (err) {
     noteSession = null;
+    openNote(note.id);
     status.textContent = `Generation failed: ${err.message}`;
     status.style.color = 'var(--red)';
-    openNote(note.id);
+    openModal(document.getElementById('noteStudyModal'));
     showToast('AI study generation failed');
   }
+}
+
+function showNoteExplanation(explanation, correct) {
+  const target = document.getElementById('noteExplanation');
+  if (!target) return;
+  if (!explanation) { target.innerHTML = ''; return; }
+  target.innerHTML = `<div class="note-explanation"><strong>${correct ? 'Correct' : 'Review'}:</strong> ${esc(explanation)}</div>`;
 }
 
 function renderNoteStudy() {
@@ -4002,8 +4034,8 @@ function renderNoteStudy() {
     body = `
       <div class="flashcard-scene">
         <div class="flashcard" id="flashcard" role="button" tabindex="0" aria-pressed="false" aria-label="Reveal answer">
-          <div class="flashcard-face front"><div class="flashcard-text">${esc(item.front)}</div></div>
-          <div class="flashcard-face back"><div class="flashcard-text">${esc(item.back)}</div></div>
+          <div class="flashcard-face front"><div class="flashcard-label">Prompt</div><div class="flashcard-text">${esc(item.front)}</div></div>
+          <div class="flashcard-face back"><div class="flashcard-label">Answer</div><div class="flashcard-text">${esc(item.back)}</div></div>
         </div>
       </div>
       <div class="answer-btns" id="noteAnswerBtns" style="visibility:hidden">
@@ -4045,11 +4077,17 @@ function renderNoteStudy() {
     const flip = () => {
       const flipped = fc.classList.toggle('flipped');
       fc.setAttribute('aria-pressed', String(flipped));
+      fc.setAttribute('aria-label', flipped ? 'Show prompt' : 'Reveal answer');
       document.getElementById('noteAnswerBtns').style.visibility = 'visible';
+      if (flipped && item.explanation) showNoteExplanation(item.explanation);
     };
-    fc.addEventListener('click', flip);
+    const activate = () => {
+      if (!fc.classList.contains('flipped')) flip();
+      else document.querySelector('#noteAnswerBtns .ans-btn.good')?.click();
+    };
+    fc.addEventListener('click', () => { if (!fc.classList.contains('flipped')) flip(); });
     fc.addEventListener('keydown', e => {
-      if ((e.key === 'Enter' || e.key === ' ') && document.activeElement === fc) { e.preventDefault(); flip(); }
+      if ((e.key === 'Enter' || e.key === ' ') && document.activeElement === fc) { e.preventDefault(); activate(); }
     });
     document.getElementById('noteAnswerBtns').addEventListener('click', e => {
       const btn = e.target.closest('[data-ans]');
@@ -4066,7 +4104,8 @@ function renderNoteStudy() {
         if (option.dataset.correct === '1') option.classList.add('correct');
         else if (option === btn) option.classList.add('wrong');
       });
-      setTimeout(() => recordNoteResult(correct), 1000);
+      showNoteExplanation(item.explanation, correct);
+      setTimeout(() => recordNoteResult(correct), 1400);
     });
   }
 }
@@ -4201,7 +4240,7 @@ document.addEventListener('keydown', e => {
       openModals.forEach(closeModal);
       return;
     }
-    if (sidebar.classList.contains('open')) setMobileSidebar(false);
+    if (isMobileViewport.matches && !document.body.classList.contains('sidebar-closed')) setMobileSidebar(false);
   }
 });
 
@@ -4220,7 +4259,17 @@ document.addEventListener('keydown', e => {
   }
   if (noteSession && noteSession.index < noteSession.items.length) {
     const item = noteSession.items[noteSession.index];
-    if (e.key === '1' && item.type === 'quiz') document.querySelector('#noteQuizChoices .quiz-choice')?.click();
+    if (item.type === 'quiz' && ['1', '2', '3', '4'].includes(e.key)) {
+      const choices = [...document.querySelectorAll('#noteQuizChoices .quiz-choice:not(:disabled)')];
+      choices[Number(e.key) - 1]?.click();
+    } else if ((e.code === 'Space' || e.key === ' ') && item.type === 'flashcard') {
+      const fc = document.getElementById('flashcard');
+      if (fc && document.activeElement !== fc) {
+        e.preventDefault();
+        if (!fc.classList.contains('flipped')) fc.click();
+        else document.querySelector('#noteAnswerBtns .ans-btn.good')?.click();
+      }
+    }
     return;
   }
   if (!session || session.index >= session.cards.length) return;
@@ -4230,6 +4279,7 @@ document.addEventListener('keydown', e => {
     if (!fc) return;
     const flipped = fc.classList.contains('flipped');
     if (e.code === 'Space' || e.key === ' ') {
+      if (document.activeElement === fc) return; // the card handles Space without double-firing
       e.preventDefault();
       if (!flipped) fc.click();
       else (document.querySelector('.ans-btn[data-rating="3"]') || document.querySelector('.ans-btn.good')).click();
@@ -4257,6 +4307,7 @@ function renderAll() {
   renderSidebar();
   renderHome();
   renderOverview();
+  if (document.getElementById('notesView').classList.contains('active')) renderNoteView();
 }
 if (!state.decks.some(d => d.id === state.activeDeckId)) state.activeDeckId = state.decks[0]?.id || null;
 if (!state.notes.some(n => n.id === state.activeNoteId)) state.activeNoteId = state.notes[0]?.id || null;
