@@ -126,9 +126,10 @@ body.sidebar-closed #sidebar {
   transition: left 0.22s cubic-bezier(0.4,0,0.2,1), background 0.18s ease, border-color 0.18s ease;
 }
 body:not(.sidebar-closed) .sidebar-toggle {
-  left: calc(var(--sidebar-w) - 66px);
+  left: calc(var(--sidebar-w) - 38px);
   background: transparent; border-color: transparent;
 }
+body:not(.sidebar-closed) #settingsBtn { margin-right: 38px; }
 .sidebar-top { display: flex; align-items: center; justify-content: space-between; padding: 18px 12px 12px; gap: 8px; }
 .topbar-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
 .logo { display: flex; align-items: center; gap: 10px; overflow: hidden; white-space: nowrap; padding-left: 8px; }
