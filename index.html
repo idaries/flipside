@@ -26,7 +26,6 @@
   --radius: 10px;
   --radius-lg: 16px;
   --sidebar-w: 252px;
-  --sidebar-w-collapsed: 72px;
 }
 :root[data-theme="macchiato"] {
   --bg: #24273a;
@@ -104,18 +103,32 @@ body {
 #app { display: flex; height: 100vh; }
 
 /* ============ SIDEBAR ============ */
-.mobile-toggle { display: none; }
+#app { display: flex; }
 
 #sidebar {
-  width: var(--sidebar-w);
-  min-width: var(--sidebar-w);
+  width: var(--sidebar-w); min-width: var(--sidebar-w);
   background: var(--surface);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  transition: width 0.22s cubic-bezier(0.4,0,0.2,1), min-width 0.22s cubic-bezier(0.4,0,0.2,1);
+  overflow: hidden;
+  transition: width 0.22s cubic-bezier(0.4,0,0.2,1), min-width 0.22s cubic-bezier(0.4,0,0.2,1), opacity 0.18s ease, visibility 0s linear;
 }
-#sidebar.collapsed { width: var(--sidebar-w-collapsed); min-width: var(--sidebar-w-collapsed); }
+body.sidebar-closed #sidebar {
+  width: 0; min-width: 0; opacity: 0; visibility: hidden; border-right: none;
+  transition: width 0.22s cubic-bezier(0.4,0,0.2,1), min-width 0.22s cubic-bezier(0.4,0,0.2,1), opacity 0.18s ease, visibility 0s linear 0.22s;
+}
+.sidebar-toggle {
+  display: grid; position: fixed; top: 18px; left: 20px; z-index: 40;
+  width: 26px; height: 26px; border-radius: 7px;
+  background: var(--surface); border: 1px solid var(--border-2);
+  color: var(--text-2); cursor: pointer; place-items: center;
+  transition: left 0.22s cubic-bezier(0.4,0,0.2,1), background 0.18s ease, border-color 0.18s ease;
+}
+body:not(.sidebar-closed) .sidebar-toggle {
+  left: calc(var(--sidebar-w) - 66px);
+  background: transparent; border-color: transparent;
+}
 .sidebar-top { display: flex; align-items: center; justify-content: space-between; padding: 18px 12px 12px; gap: 8px; }
 .topbar-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
 .logo { display: flex; align-items: center; gap: 10px; overflow: hidden; white-space: nowrap; padding-left: 8px; }
@@ -126,28 +139,12 @@ body {
 }
 .logo-mark svg { width: 13px; height: 13px; }
 .logo-name { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; transition: opacity 0.15s; }
-#sidebar.collapsed .sidebar-top { flex-direction: column; gap: 12px; padding: 16px 0; }
-#sidebar.collapsed .topbar-actions { flex-direction: column; gap: 6px; }
-#sidebar.collapsed .logo { justify-content: center; padding-left: 0; }
-#sidebar.collapsed .logo-name, #sidebar.collapsed .sidebar-label,
-#sidebar.collapsed .deck-info, #sidebar.collapsed .deck-actions,
-#sidebar.collapsed .new-deck-btn span { display: none; }
-#sidebar.collapsed .sidebar-section { padding: 4px 8px; }
-#sidebar.collapsed .deck-item { justify-content: center; padding: 9px 0; }
-#sidebar.collapsed .folder-row { justify-content: center; padding: 8px 0; }
-#sidebar.collapsed .folder-row .chev { display: none; }
-#sidebar.collapsed .folder-row .folder-glyph { display: grid; place-items: center; }
-#sidebar.collapsed .folder-decks { margin-left: 0; padding-left: 0; border-left: none; }
-#sidebar.collapsed .deck-dot { margin: 0 auto; }
-#sidebar.collapsed .new-deck-btn { padding: 9px 0; justify-content: center; }
-#collapseBtn, #settingsBtn {
+#settingsBtn {
   width: 26px; height: 26px; border-radius: 7px; border: none;
   background: transparent; color: var(--text-3); cursor: pointer;
   display: grid; place-items: center; transition: color 0.12s, background 0.12s; flex-shrink: 0;
 }
-#collapseBtn:hover, #settingsBtn:hover { color: var(--text); background: var(--surface-2); }
-#collapseBtn svg { transition: transform 0.22s; }
-#sidebar.collapsed #collapseBtn svg { transform: rotate(180deg); }
+#settingsBtn:hover { color: var(--text); background: var(--surface-2); }
 .sidebar-section { padding: 4px 10px; flex: 1; overflow-y: auto; }
 .sidebar-section::-webkit-scrollbar { width: 4px; }
 .sidebar-section::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
@@ -392,7 +389,6 @@ body {
 .home-nav svg { width: 16px; height: 16px; margin-left: 7px; flex-shrink: 0; }
 .home-nav:hover { background: rgba(255, 235, 210, .04); color: var(--text); }
 .home-nav.active { background: var(--surface-3); color: var(--accent); }
-#sidebar.collapsed .home-nav { justify-content: center; padding: 9px 0; }
 @media (max-width: 640px) {
   .home-wrap { padding: 24px 20px 60px; }
   .home-stats { grid-template-columns: 1fr; }
@@ -575,11 +571,6 @@ body {
 .import-preview .ip-row { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .import-preview .ip-row b { color: var(--text); font-weight: 600; }
 @media (max-width: 640px) {
-  #sidebar { position: fixed; height: 100vh; z-index: 20; box-shadow: 16px 0 40px rgba(0,0,0,0.5); }
-  #sidebar.collapsed { width:0; min-width:0; border:none; overflow:hidden; visibility:hidden; }
-  .mobile-toggle { display:grid; }
-  #sidebar:not(.collapsed) + #main::before { content:''; position:fixed; inset:0; background:var(--overlay); z-index:15; }
-  #mobileSidebarToggle { position:relative; z-index:25; }
   .folder-decks { margin-left: 0; padding-left: 0; border-left: none; }
   .deck-actions { opacity: 1; pointer-events: auto; }
   .deck-actions .icon-btn-sm { width: 24px; height: 24px; }
@@ -604,9 +595,6 @@ body {
         <button id="settingsBtn" title="Settings">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
-        <button id="collapseBtn" title="Toggle sidebar">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
       </div>
     </div>
     <div class="sidebar-section">
@@ -629,8 +617,8 @@ body {
   </aside>
 
   <main id="main">
-    <button id="mobileSidebarToggle" class="mobile-toggle" aria-label="Open decks menu" aria-controls="sidebar" aria-expanded="false">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    <button id="mobileSidebarToggle" class="sidebar-toggle" aria-label="Open decks menu" aria-controls="sidebar" aria-expanded="false">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
     <div class="view active" id="homeView">
       <div class="home-wrap">
@@ -1233,13 +1221,12 @@ function showToast(message, action) {
 }
 const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
 function setMobileSidebar(open) {
-  sidebar.classList.toggle('collapsed', !open);
+  document.body.classList.toggle('sidebar-closed', !open);
   mobileSidebarToggle.setAttribute('aria-expanded', String(open));
   mobileSidebarToggle.setAttribute('aria-label', open ? 'Close decks menu' : 'Open decks menu');
 }
 mobileSidebarToggle.addEventListener('click', () => {
-  setMobileSidebar(sidebar.classList.contains('collapsed'));
-  if (!sidebar.classList.contains('collapsed')) document.querySelector('.deck-select')?.focus();
+  setMobileSidebar(document.body.classList.contains('sidebar-closed'));
 });
 
 document.addEventListener('keydown', e => {
@@ -1257,17 +1244,8 @@ document.addEventListener('keydown', e => {
 // ==================== SIDEBAR ====================
 const sidebar = document.getElementById('sidebar');
 const isMobileViewport = window.matchMedia('(max-width: 640px)');
-if (isMobileViewport.matches || localStorage.getItem('flash-sidebar-collapsed') === '1') sidebar.classList.add('collapsed');
-isMobileViewport.addEventListener('change', e => {
-  if (e.matches) setMobileSidebar(false);
-  else sidebar.classList.remove('collapsed');
-  mobileSidebarToggle.setAttribute('aria-expanded', String(!sidebar.classList.contains('collapsed')));
-});
-document.getElementById('collapseBtn').addEventListener('click', () => {
-  sidebar.classList.toggle('collapsed');
-  localStorage.setItem('flash-sidebar-collapsed', sidebar.classList.contains('collapsed') ? '1' : '0');
-  mobileSidebarToggle.setAttribute('aria-expanded', String(!sidebar.classList.contains('collapsed')));
-});
+setMobileSidebar(!isMobileViewport.matches);
+isMobileViewport.addEventListener('change', e => setMobileSidebar(!e.matches));
 
 function exportDeck(deck) {
   const safe = line => line.replace(/\t/g, ' ').replace(/\n/g, ' ');
@@ -1335,7 +1313,6 @@ function buildFolderRow(folder) {
       </button>
     </div>`;
   row.addEventListener('click', e => {
-    if (sidebar.classList.contains('collapsed')) { sidebar.classList.remove('collapsed'); return; }
     if (e.target.closest('[data-rename-folder]')) {
       const name = prompt('Rename folder:', folder.name);
       if (name && name.trim()) {
@@ -3302,7 +3279,9 @@ document.addEventListener('keydown', e => {
     if (openModals.length) {
       e.stopImmediatePropagation(); // close the modal without also leaving study mode
       openModals.forEach(closeModal);
+      return;
     }
+    if (sidebar.classList.contains('open')) setMobileSidebar(false);
   }
 });
 
