@@ -647,7 +647,7 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="14" height="14" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v11"/></svg>
           </div>
           <div class="empty-title">No decks yet</div>
-          <div class="empty-sub">Create your first deck, or import one from Quizlet or Anki.</div>
+          <div class="empty-sub">Create your first deck, or import one from Anki.</div>
           <div class="empty-actions">
             <button class="btn-primary" id="emptyCreateBtn">New deck</button>
             <button class="btn-secondary" id="emptyImportBtn">Import deck</button>
@@ -907,14 +907,13 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
     <div class="field">
       <label id="importSourceLabel">Source format</label>
       <div class="seg-group" id="importSource">
-        <button class="seg-btn active" data-source="quizlet" style="flex:1;justify-content:center">Quizlet</button>
-        <button class="seg-btn" data-source="anki" style="flex:1;justify-content:center">Anki</button>
+        <button class="seg-btn active" data-source="anki" style="flex:1;justify-content:center">Anki</button>
         <button class="seg-btn" data-source="photo" style="flex:1;justify-content:center">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-          File
+          Photo / file
         </button>
       </div>
-      <div class="opt-row-sub" style="margin-top:8px" id="importHint">In Quizlet, open the deck → ⋯ → Export, then copy the text and paste it below.</div>
+      <div class="opt-row-sub" style="margin-top:8px" id="importHint">In Anki, select the deck → File → Export → format “Text separated by tabs (.txt)” → export, then upload or paste the file here. Header lines starting with # are skipped.</div>
     </div>
     <div class="field" id="importNameField">
       <label for="importName">Deck name</label>
@@ -949,11 +948,11 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
     </div>
     <div id="importPhotoSection" style="display:none">
       <div class="field">
-        <label for="importPhotoFile">File to read <span style="color:var(--text-3);font-weight:400">— images, PDFs, or text files (.txt / .md / .csv); paste with ⌘V / Ctrl+V</span></label>
+        <label for="importPhotoFile">Photo or file</label>
         <label class="import-drop" for="importPhotoFile">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-          Choose a file
-          <input type="file" id="importPhotoFile" accept="image/*,.pdf,.txt,.md,.csv,.tsv" hidden>
+          Choose a photo or file
+          <input type="file" id="importPhotoFile" hidden>
         </label>
         <div id="photoThumbWrap" style="display:none;margin-top:10px">
           <img id="photoThumb" class="photo-thumb" alt="Attachment preview">
@@ -961,15 +960,11 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
         </div>
       </div>
       <div class="field">
-        <label for="importPhotoInstructions">Instructions <span style="color:var(--text-3);font-weight:400">— how should the cards be generated?</span></label>
+        <label for="importPhotoInstructions">Optional instructions</label>
         <textarea id="importPhotoInstructions" style="min-height:64px" placeholder="e.g. Make one card per vocabulary word — front = the word, back = the translation"></textarea>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px">
-        <button class="btn-secondary" id="aiExtractBtn" style="display:flex;align-items:center;gap:7px">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l4 4-9 9H4v-4z"/></svg>
-          Extract flashcards
-        </button>
-        <span id="aiExtractStatus" role="status" aria-live="polite" style="font-size:12px;color:var(--text-3);text-align:right"></span>
+      <div style="margin-bottom:16px">
+        <span id="aiExtractStatus" role="status" aria-live="polite" style="display:block;font-size:12px;color:var(--text-3);text-align:right"></span>
       </div>
     </div>
     <div class="import-preview" id="importPreview" role="status" aria-live="polite"></div>
@@ -2863,7 +2858,7 @@ document.getElementById('newFolderBtn').addEventListener('click', e => {
 
 // ==================== IMPORT// ==================== IMPORT (lives inside the card modal) ====================
 let importTargetDeck = null;
-let importSource = 'quizlet';
+let importSource = 'anki';
 
 function syncImportTabMode() {
   const targeted = !!importTargetDeck;
@@ -2894,9 +2889,8 @@ document.getElementById('cardModeTabs').addEventListener('click', e => {
 });
 
 const IMPORT_HINTS = {
-  quizlet: 'In Quizlet, open the deck → ⋯ (or Export) → copy the exported text and paste it below. Default separators: tab between term and definition, new line between cards.',
   anki: 'In Anki, select the deck → File → Export → format “Text separated by tabs (.txt)” → export, then upload or paste the file here. Header lines starting with # are skipped.',
-  photo: 'Upload or paste a file and your AI provider will turn it into flashcards: images and PDFs are read with vision, plain text files (.txt / .md / .csv) as text. Add instructions to control how the cards are built. Requires an AI provider + API key in Settings.',
+  photo: 'Use any photo or file — choose, drop, or paste it. AI turns the content into cards. Requires an AI provider + API key in Settings.',
 };
 
 function updateImportSections() {
@@ -3197,15 +3191,6 @@ async function runFileExtraction() {
   }
 }
 
-document.getElementById('aiExtractBtn').addEventListener('click', async () => {
-  const btn = document.getElementById('aiExtractBtn');
-  btn.disabled = true;
-  const originalLabel = btn.innerHTML;
-  btn.textContent = 'Extracting…';
-  await runFileExtraction();
-  btn.disabled = false;
-  btn.innerHTML = originalLabel;
-});
 
 // ---------- Clipboard paste support in the import dialog ----------
 document.addEventListener('paste', e => {
