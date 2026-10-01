@@ -254,3 +254,49 @@ test('note study markup exposes explanations and Space support', () => {
   assert.match(source, /noteAnswerBtns \.ans-btn\.good/);
   assert.match(source, /Space.*answers/);
 });
+
+test('card IDs stay stable across repeated loads', () => {
+  const context = makeContext();
+  run(source, context);
+  const first = run(`normalizeLibrary({
+    decks: [{ id: 'deck', name: 'Deck', cards: [
+      { id: 'shared', front: 'A', back: 'B' },
+      { id: 'shared', front: 'C', back: 'D' },
+    ]}]
+  })`, context);
+  assert.equal(first.decks[0].cards[0].id, 'shared');
+  assert.notEqual(first.decks[0].cards[1].id, first.decks[0].cards[0].id);
+  const second = run(`normalizeLibrary(${JSON.stringify(first)})`, context);
+  assert.deepEqual(second.decks[0].cards.map(card => card.id), first.decks[0].cards.map(card => card.id));
+});
+
+test('AI distractor cache is pruned in memory and storage', () => {
+  const context = makeContext();
+  run(source, context);
+  run(`for (let i = 0; i < ${301}; i++) cacheDistractors('key-' + i, ['a', 'b', 'c']);`, context);
+  const result = run(`({ memory: Object.keys(aiCache).length, firstKeyPresent: 'key-0' in aiCache, lastKeyPresent: 'key-300' in aiCache, stored: JSON.parse(localStorage.getItem(AI_CACHE_KEY)) })`, context);
+  assert.equal(result.memory, 300);
+  assert.equal(result.firstKeyPresent, false);
+  assert.equal(result.lastKeyPresent, true);
+  assert.equal(Object.keys(result.stored).length, 300);
+});
+
+test('backup import rejects data without a deck array', () => {
+  const context = makeContext();
+  run(source, context);
+  assert.throws(() => run(`parseBackup(JSON.stringify({nope: true}))`, context), /No decks found/);
+  assert.throws(() => run(`parseBackup('not json')`, context));
+});
+
+test('FSRS decks with no reviews can still open study options', () => {
+  const context = makeContext();
+  run(source, context);
+  run(`state.options.starredOnly = false; state.decks = [{
+    id: 'deck', name: 'Deck', color: COLORS[0], fsrs: true,
+    cards: [{ id: 'later', front: 'A', back: 'B', starred: false, schedule: {
+      stability: 10, difficulty: 5, due: Date.now() + 86_400_000, last: Date.now(), reps: 1, lapses: 0
+    } }]
+  }]; state.activeDeckId = 'deck'; renderOverview();`, context);
+  assert.equal(run(`document.getElementById('studyBtn').disabled`, context), false);
+  assert.equal(run(`document.getElementById('studyBtnLabel').textContent`, context), 'No reviews due');
+});

@@ -16,7 +16,7 @@
   --border-2: rgba(205, 214, 244, 0.14);
   --text: #cdd6f4;
   --text-2: #a6adc8;
-  --text-3: #6c7086;
+  --text-3: #8f96b0;
   --accent: #cba6f7;
   --accent-deep: #b4befe;
   --green: #a6e3a1;
@@ -36,7 +36,7 @@
   --border-2: rgba(202, 211, 245, 0.14);
   --text: #cad3f5;
   --text-2: #a5adcb;
-  --text-3: #6e738d;
+  --text-3: #8f96b0;
   --accent: #c6a0f6;
   --accent-deep: #b7bdf8;
   --green: #a6da95;
@@ -53,7 +53,7 @@
   --border-2: rgba(198, 208, 245, 0.15);
   --text: #c6d0f5;
   --text-2: #a5adce;
-  --text-3: #737994;
+  --text-3: #8f96b0;
   --accent: #ca9ee6;
   --accent-deep: #babbf1;
   --green: #a6d189;
@@ -70,7 +70,7 @@
   --border-2: rgba(76, 79, 105, 0.16);
   --text: #4c4f69;
   --text-2: #6c6f89;
-  --text-3: #9ca0b0;
+  --text-3: #5f6382;
   --accent: #8839ef;
   --accent-deep: #7287fd;
   --green: #40a02b;
@@ -263,6 +263,7 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
 }
 .switch input:checked + .slider { background: var(--accent-deep); border-color: var(--accent-deep); }
 .switch input:checked + .slider::before { transform: translateX(18px); }
+.switch input:focus-visible + .slider { outline: 2px solid var(--accent-deep); outline-offset: 2px; }
 
 .study-cta {
   width: 100%; padding: 14px; margin-top: 28px; border-radius: var(--radius); border: none; cursor: pointer;
@@ -671,7 +672,12 @@ body:not(.sidebar-closed) #settingsBtn { margin-right: 34px; }
   .deck-actions { opacity: 1; pointer-events: auto; }
   .deck-actions .icon-btn-sm { width: 24px; height: 24px; }
   .folder-row .deck-actions .icon-btn-sm { width: 26px; }
-  .overview-wrap, .study-wrap { padding: 24px 20px 60px; }
+  .home-wrap, .overview-wrap, .study-wrap { padding: 72px 20px 60px; }
+  .note-workspace { padding-top: 68px; }
+  .card-row { align-items: flex-start; flex-wrap: wrap; gap: 10px; }
+  .card-front, .card-back { flex: 1 1 100%; }
+  .card-front .card-text, .card-back .card-text { white-space: normal; overflow: visible; text-overflow: clip; }
+  .card-row .icon-btn-sm { flex: none; }
   .flashcard { height: 260px; }
   .opt-row { flex-direction: column; align-items: flex-start; }
 }
@@ -1254,6 +1260,7 @@ function normalizeLibrary(parsed) {
     let id = String(d.id || '').trim();
     if (!id || usedDeckIds.has(id)) id = `deck-${di}-${uid()}`;
     usedDeckIds.add(id);
+    const usedCardIds = new Set();
     return {
       id,
       name: typeof d.name === 'string' && d.name.trim() ? d.name.trim().slice(0, 80) : 'Untitled deck',
@@ -1261,13 +1268,18 @@ function normalizeLibrary(parsed) {
       color: safeColor(d.color),
       folderId: typeof d.folderId === 'string' && d.folderId ? d.folderId : null,
       fsrs: !!d.fsrs,
-      cards: (Array.isArray(d.cards) ? d.cards : []).filter(Boolean).map((c, ci) => ({
-        id: typeof c.id === 'string' && c.id ? `${id}-${ci}-${c.id}` : `${id}-${ci}-${uid()}`,
-        front: typeof c.front === 'string' ? c.front : '',
-        back: typeof c.back === 'string' ? c.back : '',
-        starred: !!c.starred,
-        schedule: normalizeFsrsState(c.schedule),
-      })),
+      cards: (Array.isArray(d.cards) ? d.cards : []).filter(Boolean).map((c, ci) => {
+        let cardId = typeof c.id === 'string' ? c.id.trim() : '';
+        if (!cardId || usedCardIds.has(cardId)) cardId = `${id}-${ci}-${uid()}`;
+        usedCardIds.add(cardId);
+        return {
+          id: cardId,
+          front: typeof c.front === 'string' ? c.front : '',
+          back: typeof c.back === 'string' ? c.back : '',
+          starred: !!c.starred,
+          schedule: normalizeFsrsState(c.schedule),
+        };
+      }),
     };
   });
   folders = folders.filter(Boolean).map((f, fi) => {
@@ -1479,7 +1491,8 @@ document.addEventListener('keydown', e => {
     .filter(el => el.offsetParent !== null || el === document.activeElement);
   if (!focusables.length) return;
   const first = focusables[0], last = focusables.at(-1);
-  if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  if (!modal.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
 });
 
@@ -1775,8 +1788,8 @@ function renderOverview() {
       ? 'Add cards to study'
       : counts.reviewable
         ? `Review ${counts.reviewable} card${counts.reviewable === 1 ? '' : 's'}`
-        : 'All caught up';
-    document.getElementById('studyBtn').disabled = !counts.reviewable;
+        : 'No reviews due';
+    document.getElementById('studyBtn').disabled = !deck.cards.length;
   } else {
     scheduleNote.style.display = 'none';
     scheduleNote.innerHTML = '';
@@ -2135,14 +2148,16 @@ function loadAiCache() {
   }
 }
 
-const aiCache = loadAiCache();
+let aiCache = loadAiCache();
 
 function cacheDistractors(key, value) {
   if (!key || !Array.isArray(value)) return;
   aiCache[key] = value;
   try {
     const entries = Object.entries(aiCache).slice(-AI_CACHE_LIMIT);
-    localStorage.setItem(AI_CACHE_KEY, JSON.stringify(Object.fromEntries(entries)));
+    const persisted = Object.fromEntries(entries);
+    aiCache = persisted;
+    localStorage.setItem(AI_CACHE_KEY, JSON.stringify(persisted));
   } catch (err) {
     console.error(err);
   }
@@ -2635,8 +2650,8 @@ function renderStudy() {
         `}
       </div>
       <div class="study-hint">${deck.fsrs
-        ? 'Space flips or confirms · 1 Again · 2 Hard · 3 Good · 4 Easy · Esc exits'
-        : 'Space flips or confirms · 1 still learning · 2 got it · Esc exits'}`;
+        ? 'Enter toggles · Space flips or confirms · 1 Again · 2 Hard · 3 Good · 4 Easy · Esc exits'
+        : 'Enter toggles · Space flips or confirms · 1 still learning · 2 got it · Esc exits'}</div>`;
   } else {
     body = `
       <div class="flashcard-scene">
@@ -2680,7 +2695,11 @@ function renderStudy() {
     };
     fc.addEventListener('click', () => { if (!fc.classList.contains('flipped')) flipCard(); });
     fc.addEventListener('keydown', e => {
-      if ((e.key === 'Enter' || e.key === ' ') && document.activeElement === fc) {
+      if (document.activeElement !== fc) return;
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        flipCard(); // Enter stays a safe toggle; use Space after the reveal to answer Good.
+      } else if (e.code === 'Space' || e.key === ' ') {
         e.preventDefault();
         if (fc.classList.contains('flipped')) (document.querySelector('.ans-btn[data-rating="3"]') || document.querySelector('.ans-btn.good'))?.click();
         else flipCard();
@@ -2727,6 +2746,11 @@ function renderStudy() {
       fill(deckDistractors());
     }
   }
+
+  const focusTarget = session.mode === 'flashcards'
+    ? document.getElementById('flashcard')
+    : document.querySelector('.quiz-choice:not(:disabled)');
+  focusTarget?.focus({ preventScroll: true });
 }
 
 function recordResult(correct, rating = correct ? 3 : 1) {
@@ -2908,6 +2932,7 @@ function applyPrefs() {
   if (!ACCENTS.includes(prefs.accent)) prefs.accent = ACCENTS[0];
   document.documentElement.dataset.theme = prefs.theme;
   document.documentElement.style.setProperty('--accent', prefs.accent);
+  document.documentElement.style.setProperty('--accent-deep', prefs.accent);
   try {
     localStorage.setItem('flash-prefs', JSON.stringify(prefs));
   } catch (err) {
@@ -3028,8 +3053,8 @@ function exportBackup() {
 function parseBackup(raw) {
   const value = JSON.parse(raw);
   const source = value && value.decks ? value : { decks: value, folders: [] };
+  if (!source || !Array.isArray(source.decks)) throw new Error('No decks found');
   const normalized = normalizeLibrary(source);
-  if (!Array.isArray(normalized.decks)) throw new Error('No decks found');
   const prefsIn = value?.prefs || {};
   return {
     ...normalized,
@@ -3112,9 +3137,21 @@ document.getElementById('deckActionsMenu').addEventListener('click', e => {
   else if (action === 'edit') openDeckModal(deck);
   else if (action === 'delete') {
     if (confirm(`Delete "${deck.name}" and all its cards?`)) {
-      state.decks = state.decks.filter(d => d.id !== deck.id);
+      const deckIndex = state.decks.findIndex(d => d.id === deck.id);
+      const [deletedDeck] = state.decks.splice(deckIndex, 1);
+      if (session?.deck.id === deck.id) session = null;
       if (state.activeDeckId === deck.id) setActiveDeck(state.decks[0]?.id || null, { saveData: false });
       save(); renderAll();
+      showToast(`Deleted “${deck.name}”`, {
+        label: 'Undo',
+        run: () => {
+          if (state.decks.some(d => d.id === deck.id)) return;
+          state.decks.splice(Math.min(deckIndex, state.decks.length), 0, deletedDeck);
+          if (!state.activeDeckId) setActiveDeck(deck.id, { saveData: false });
+          save(); renderAll();
+          showToast('Deck restored');
+        },
+      });
     }
   }
 });
@@ -3194,6 +3231,10 @@ function showCardTab(tab) {
     document.getElementById('deckCreateTab').style.display = 'none';
     document.getElementById('deckImportTab').style.display = '';
     syncImportTabMode();
+    resetImportForm();
+    setImportFile(null);
+    updateImportPreview();
+    document.getElementById('importText').focus();
   }
 }
 document.getElementById('cardModeTabs').addEventListener('click', e => {
@@ -3766,12 +3807,26 @@ function createNote() {
 function deleteNote(id) {
   const note = state.notes.find(n => n.id === id);
   if (!note) return;
-  if (!confirm(`Delete "${noteDisplayName(note)}"? This cannot be undone.`)) return;
-  state.notes = state.notes.filter(n => n.id !== id);
-  state.activeNoteId = state.activeNoteId === id ? state.notes[0]?.id || null : state.activeNoteId;
+  if (!confirm(`Delete "${noteDisplayName(note)}"?`)) return;
+  const noteIndex = state.notes.findIndex(n => n.id === id);
+  const previousActiveNoteId = state.activeNoteId;
+  const [deletedNote] = state.notes.splice(noteIndex, 1);
+  if (state.activeNoteId === id) state.activeNoteId = state.notes[0]?.id || null;
   save();
   if (document.getElementById('notesView').classList.contains('active')) renderNoteView();
   renderAllSidebarOnly();
+  showToast(`Deleted “${noteDisplayName(note)}”`, {
+    label: 'Undo',
+    run: () => {
+      if (state.notes.some(n => n.id === note.id)) return;
+      state.notes.splice(Math.min(noteIndex, state.notes.length), 0, deletedNote);
+      state.activeNoteId = previousActiveNoteId;
+      save();
+      if (document.getElementById('notesView').classList.contains('active')) renderNoteView();
+      renderAllSidebarOnly();
+      showToast('Note restored');
+    },
+  });
 }
 
 function executeNoteCommand(command, value = null) {
@@ -4042,7 +4097,7 @@ function renderNoteStudy() {
         <button class="ans-btn again" data-ans="wrong">Still learning</button>
         <button class="ans-btn good" data-ans="correct">Got it</button>
       </div>
-      <div class="study-hint">Space flips or answers · Esc exits</div>`;
+      <div class="study-hint">Enter toggles · Space flips or answers · Esc exits</div>`;
   } else {
     body = `
       <div class="flashcard-scene">
@@ -4081,13 +4136,17 @@ function renderNoteStudy() {
       document.getElementById('noteAnswerBtns').style.visibility = 'visible';
       if (flipped && item.explanation) showNoteExplanation(item.explanation);
     };
-    const activate = () => {
-      if (!fc.classList.contains('flipped')) flip();
-      else document.querySelector('#noteAnswerBtns .ans-btn.good')?.click();
-    };
     fc.addEventListener('click', () => { if (!fc.classList.contains('flipped')) flip(); });
     fc.addEventListener('keydown', e => {
-      if ((e.key === 'Enter' || e.key === ' ') && document.activeElement === fc) { e.preventDefault(); activate(); }
+      if (document.activeElement !== fc) return;
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        flip(); // Enter stays a safe toggle; use Space after the reveal to answer Got it.
+      } else if (e.code === 'Space' || e.key === ' ') {
+        e.preventDefault();
+        if (fc.classList.contains('flipped')) document.querySelector('#noteAnswerBtns .ans-btn.good')?.click();
+        else flip();
+      }
     });
     document.getElementById('noteAnswerBtns').addEventListener('click', e => {
       const btn = e.target.closest('[data-ans]');
@@ -4107,6 +4166,7 @@ function renderNoteStudy() {
       showNoteExplanation(item.explanation, correct);
       setTimeout(() => recordNoteResult(correct), 1400);
     });
+    document.querySelector('#noteQuizChoices .quiz-choice')?.focus({ preventScroll: true });
   }
 }
 

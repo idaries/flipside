@@ -34,7 +34,7 @@ npm test
 - Anki TSV import and export
 - Optional AI-assisted file import and quiz distractors
 - Themes, persisted study preferences, card search, a study dashboard with FSRS workload, and JSON backup/restore
-- Reversible card deletion and drag-and-drop text file import
+- Reversible card, deck, and note deletion; drag-and-drop text file import
 
 ## Data
 
